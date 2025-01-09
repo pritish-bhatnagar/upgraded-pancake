@@ -6,15 +6,29 @@ import { AppComponent } from './app.component';
 
 
 import { AdsenseModule } from 'ng2-adsense';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatDialogModule} from '@angular/material/dialog';
+import { TwitterComponent } from './twitter/twitter.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    TwitterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AdsenseModule.forRoot()
+    AdsenseModule.forRoot(),
+    BrowserAnimationsModule,
+    MatProgressBarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]
