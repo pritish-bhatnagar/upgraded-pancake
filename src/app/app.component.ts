@@ -13,7 +13,7 @@ export class AppComponent implements AfterViewInit {
   loading = false;
 clear = false;
   twitterLink = 'https://twitter.com/PritishBhatnag1?ref_src=twsrc%5Etfw';
-constructor(public dialog: MatDialog){
+constructor(public dialog: MatDialog,private renderer: Renderer2){
  
 
 }
@@ -34,13 +34,15 @@ openDialog() {
   
   
 }
-ngAfterViewInit(): void {
-  const twitterScript = document.querySelector('script[src*="platform.twitter.com"]');
-  if (twitterScript) {
-    const twttr = (window as any).twttr;
-    twttr.events.bind('loaded', () => {
-      this.loading = false;
-    });
-  }
+  async ngAfterViewInit() {
+  this.loading = true;
+  this.twitterLink = `https://twitter.com/narendramodi?ref_src=twsrc%5Etfw`;
+  const script = this.renderer.createElement('script');
+  script.src = 'https://platform.twitter.com/widgets.js';
+  script.charset = 'utf-8';
+  script.async = true;
+this.renderer.appendChild(document.body, script);
+this.loading = false;
+  
 }
 }

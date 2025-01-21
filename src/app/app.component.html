@@ -1,17 +1,21 @@
-<ng-adsense [adClient]="'ca-pub-2049954604511814'" [pageLevelAds]="true" [display]="'inline-block'"
-[width]="320"
-[height]="108"></ng-adsense>
+<ng-adsense
+  [adClient]="'ca-pub-2049954604511814'"
+  [pageLevelAds]="true"
+  [display]="'inline-block'"
+  [width]="320"
+  [height]="108"
+></ng-adsense>
 <div *ngIf="loading">
   <mat-progress-bar mode="buffer"></mat-progress-bar>
 </div>
 <div *ngIf="!loading">
-  <mat-form-field appearance="outline">
-    <mat-label>Outline form field</mat-label>
-    <input matInput  #twitterHandle placeholder="Placeholder">
-    <mat-icon matSuffix (click)="updateTwitterLink(twitterHandle.value)">search</mat-icon>
+  <mat-form-field appearance="outline" style="width: 100%">
+    <mat-label>Search Profile On X</mat-label>
+    <input matInput #twitterHandle placeholder="Profile" />
+    <mat-icon matSuffix (click)="updateTwitterLink(twitterHandle.value)"
+      >search</mat-icon
+    >
   </mat-form-field>
 </div>
 
-
-
-
+<a class="twitter-timeline" [href]="twitterLink">Loading...</a>
