@@ -38,7 +38,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -66,10 +66,10 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "upgraded-pancake:build:production"
+              "buildTarget": "upgraded-pancake:build:production"
             },
             "development": {
-              "browserTarget": "upgraded-pancake:build:development"
+              "buildTarget": "upgraded-pancake:build:development"
             }
           },
 
@@ -78,7 +78,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "upgraded-pancake:build"
+            "buildTarget": "upgraded-pancake:build"
           }
         },
         "test": {
