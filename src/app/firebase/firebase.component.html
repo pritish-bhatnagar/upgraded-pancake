@@ -1,0 +1,112 @@
+<mat-toolbar>
+  <button
+    mat-icon-button
+    class="example-icon"
+    aria-label="Example icon-button with menu icon"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="example-spacer"></span>
+  <span>Pritish's Autobiography</span>
+  <span class="example-spacer"></span>
+  <button
+    mat-icon-button
+    class="example-icon favorite-icon"
+    (click)="user ? logout() : signIn()"
+    aria-label="Example icon-button with heart icon"
+  >
+    <mat-icon *ngIf="!user">lock</mat-icon>
+    <mat-icon *ngIf="user">lock_open</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    class="example-icon"
+    aria-label="Example icon-button with share icon"
+  >
+    <mat-icon>share</mat-icon>
+  </button>
+</mat-toolbar>
+
+  <div *ngIf="!user">
+    <!-- Login <mat-slide-toggle [(ngModel)]="isLogin" color= "primary"></mat-slide-toggle> Sign-Up -->
+
+<!-- <mat-stepper
+*ngIf="!isLogin"
+  class="example-stepper"
+  [orientation]="(stepperOrientation | async)!">
+  <mat-step [stepControl]="firstFormGroup" label="Fill out your name">
+    <button (click)="signIn()">Sign in with Google</button>
+
+
+  <p *ngIf="errorMessage" style="color: red">{{ errorMessage }}</p>
+    <form [formGroup]="firstFormGroup">
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input matInput placeholder="Email" formControlName="firstCtrlEmail" required>
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <mat-label>Password</mat-label>
+        <input matInput placeholder="Password" formControlName="firstCtrlPassword" required>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperNext (click)="signUp($event)">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="secondFormGroup" label="Set Display Name">
+    <div *ngIf="user && !user?.displayName">
+      <h4>Set your display name</h4>
+      <input [(ngModel)]="newDisplayName" placeholder="Enter display name" />
+      <button (click)="setDisplayName()">Set Display Name</button>
+    </div>
+    <form [formGroup]="secondFormGroup">
+      <mat-form-field>
+        <mat-label>Address</mat-label>
+        <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
+               required>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="thirdFormGroup" label="Fill out your phone number">
+    <form [formGroup]="thirdFormGroup">
+      <mat-form-field>
+        <mat-label>Phone number</mat-label>
+        <input matInput formControlName="thirdCtrl" placeholder="Ex. 12345678" required>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Done</ng-template>
+    <p>You are now done.</p>
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+    </div>
+  </mat-step>
+</mat-stepper> -->
+
+
+
+
+
+  
+<div *ngIf="isLogin">
+  <h2>Login</h2>
+  <form (submit)="login($event)">
+    
+    <button type="submit">Login</button>
+  </form>
+
+  <p *ngIf="errorMessage" style="color: red">{{ errorMessage }}</p>
+
+ 
+</div>
+</div>

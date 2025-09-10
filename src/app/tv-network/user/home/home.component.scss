@@ -1,0 +1,84 @@
+.section-title {
+  font-size: 24px;
+  margin: 24px 0 12px;
+  font-weight: bold;
+  padding-left: 16px;
+}
+
+.show-grid,
+.episode-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+.show-card,
+.episode-card {
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.media-img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.show-title {
+  font-size: 14px;
+  margin-top: 8px;
+  text-align: center;
+}
+.hero-slide-wrapper {
+  width: 10%;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+}
+
+.hero-slide {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  display: none;
+
+  &.active {
+    display: block;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    color: white;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+}

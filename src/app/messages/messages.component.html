@@ -1,0 +1,10 @@
+
+<div *ngIf="user">
+    <h3>Welcome, {{ user.displayName }}</h3>
+  
+    <div *ngFor="let msg of messages">
+      <strong>{{ msg?.displayName }}:</strong> {{ msg.text }}
+    </div>
+    <input [(ngModel)]="message" placeholder="Type your message..." />
+    <button (click)="sendMessage('ZiOuDDfzmBemqj0tub7ZVhnbWf63')">Send</button>
+  </div>

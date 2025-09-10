@@ -1,0 +1,94 @@
+<!-- Astronomy Picture of the Day -->
+<section *ngIf="apod">
+  <h2>APOD: {{ apod.title }}</h2>
+  <img *ngIf="apod.media_type === 'image'" [src]="apod.url" width="100%" />
+  <p>{{ apod.explanation }}</p>
+</section>
+
+<hr />
+
+<!-- Mars Rover Photos -->
+<section>
+  <h2>Mars Rover Photos (Sol 1000)</h2>
+  <div *ngFor="let photo of marsPhotos">
+    <img [src]="photo.img_src" width="300" />
+    <p>{{ photo.earth_date }} by {{ photo.rover.name }}</p>
+  </div>
+</section>
+
+<hr />
+
+<!-- Asteroids -->
+<section>
+  <h2>Near Earth Asteroids (June 20–22, 2025)</h2>
+  <ul>
+    <li *ngFor="let asteroid of asteroids">
+      {{ asteroid.name }} ({{
+        asteroid.close_approach_data[0]?.close_approach_date
+      }})
+    </li>
+  </ul>
+</section>
+
+<hr />
+
+<!-- Earth Imagery -->
+<section *ngIf="earthImageUrl">
+  <h2>Earth Satellite Image (1.5°, 100.75°)</h2>
+  <img [src]="earthImageUrl" width="100%" />
+</section>
+
+<hr />
+
+<!-- NASA Media Search: Combined Images and Videos -->
+<section>
+    <h2>NASA Media Search: "moon"</h2>
+  
+    <div *ngFor="let item of imageResults">
+      <ng-container [ngSwitch]="item.data[0].media_type">
+        
+        <!-- IMAGE -->
+        <div *ngSwitchCase="'image'">
+          <img [src]="item.links[0].href" width="300" />
+          <p>{{ item.data[0].title }}</p>
+        </div>
+  
+        <!-- VIDEO (only show if videoUrl is ready) -->
+        <div *ngSwitchCase="'video'">
+          <p>{{ item.data[0].title }}</p>
+          <video
+            *ngIf="item.videoUrl"
+            [src]="item.videoUrl"
+            width="400"
+            height="250"
+            controls
+          ></video>
+          <p *ngIf="!item.videoUrl">Loading video...</p>
+        </div>
+      </ng-container>
+    </div>
+  </section>
+
+  
+<!-- Coronal Mass Ejections -->
+<section *ngIf="donkiCmes?.length > 0">
+  <h2>CME Events ({{ donkiCmes.length }})</h2>
+  <ul>
+    <li *ngFor="let cme of donkiCmes">
+      Date: {{ cme.startTime | date : "medium" }}, Note:
+      {{ cme.note || "No note provided" }}
+    </li>
+  </ul>
+</section>
+
+<!-- Solar Flares -->
+<section *ngIf="donkiFlares?.length > 0">
+  <h2>Solar Flares ({{ donkiFlares.length }})</h2>
+  <ul>
+    <li *ngFor="let flare of donkiFlares">
+      Flare ID: {{ flare.flrID }}, Start:
+      {{ flare.beginTime | date : "medium" }}, Peak:
+      {{ flare.peakTime | date : "medium" }}, Source: {{ flare.sourceLocation }}
+    </li>
+  </ul>
+</section>

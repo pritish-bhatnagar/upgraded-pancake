@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Lora:ital@0;1&family=Montserrat:wght@400;500&display=swap');
+
+:host {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  --scallop-seashell: #f6cbb7;
+  --cream: #faf7f4;
+  --burgundy: #9c2d41;
+}
+
+.page-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 20px auto;
+  background-color: var(--cream);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* HEADER STYLES (Unchanged) */
+.header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: var(--scallop-seashell); color: var(--burgundy); flex-wrap: wrap; gap: 15px; }
+.logo { font-family: 'Great Vibes', cursive; font-size: 2.8rem; }
+.navigation { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; font-size: 0.8rem; letter-spacing: 1px; }
+.navigation a { text-decoration: none; color: inherit; }
+.social-icons { display: flex; gap: 15px; font-size: 1.2rem; }
+.social-icons a { color: inherit; }
+
+/* MAIN CONTENT DESKTOP STYLES (Unchanged) */
+.main-content { display: grid; grid-template-columns: repeat(2, 1fr); min-height: 500px; background-color: aqua;}
+.left-pane { padding: 50px; display: flex; justify-content: flex-end; align-items: center; }
+.image-placeholder { width: 80%; aspect-ratio: 5 / 6; background-color: #e0e0e0; display: flex; justify-content: center; align-items: center; font-size: 2rem; color: #a0a0a0; border: 1px solid #d0d0d0; }
+.right-pane { background-color: var(--scallop-seashell); position: relative; display: flex; justify-content: center; align-items: center; padding: 50px; }
+.vertical-text-container { position: absolute;left: 0; top: 50%; transform: translateY(-50%); height: 100%; z-index: 999;display: flex; align-items: center; }
+.vertical-text { font-family: 'Great Vibes', cursive; font-size: 4.5rem; color: var(--burgundy);  width: 100vw; white-space: nowrap; transform-origin: center; transform: rotate(-90deg); }
+.text-content { font-family: 'Lora', serif; font-size: 2.5rem; color: var(--burgundy); line-height: 1.4; font-style: italic; padding-left: 80px; }
+
+/* FOOTER STYLES (Unchanged) */
+.footer { background-color: var(--burgundy); text-align: center; padding: 25px 20px; }
+.footer a { color: var(--cream); text-decoration: none; font-size: 0.9rem; letter-spacing: 2px; font-weight: 500; }
+
+
+/* === RESPONSIVE STYLES FOR MOBILE === */
+@media (max-width: 768px) {
+  .page-container {
+    margin: 0;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 25px;
+    padding: 25px;
+  }
+
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+
+  .left-pane {
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  
+  /* --- KEY CHANGES --- */
+  
+  .right-pane {
+    /* 1. Stack the name and the paragraph vertically */
+    flex-direction: column; 
+    gap: 15px; /* Add space between the name and the paragraph */
+    min-height: 350px;
+    padding: 40px 20px;
+  }
+  
+  .vertical-text-container {
+    /* 2. Remove absolute positioning to put it back in the normal flow */
+    position: static; 
+    transform: none;
+    height: auto;
+    width: auto;
+  }
+  
+  .vertical-text {
+    /* 3. Undo the rotation and adjust font size for a horizontal title */
+    transform: none; 
+    font-size: 3rem; 
+  }
+  
+  .text-content {
+    /* 4. Remove desktop-only padding and center the text */
+    padding-left: 0; 
+    text-align: center;
+    font-size: 1.8rem;
+  }
+}

@@ -1,0 +1,285 @@
+// === Color Variables ===
+$gold: #d4af37;
+$dark: #0d0d0d;
+$gray: #1a1a1a;
+$text: #ffffff;
+$accent: #ffca28;
+$cream: #f4ebd0;
+$charcoal: #122620;
+
+// === Base Layout ===
+.page-container {
+  background-color: $dark;
+  color: $text;
+  font-family: 'Roboto', sans-serif;
+  overflow-x: hidden;
+}
+
+// === Topbar / Navbar ===
+.topbar {
+  background-color: $dark;
+  color: $gold;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+
+  .brand {
+    font-size: 1.7rem;
+    font-family: 'Georgia', serif;
+    font-weight: bold;
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  nav {
+    display: flex;
+    gap: 1rem;
+
+    button {
+      color: $text;
+      font-weight: 500;
+      &:hover {
+        color: $gold;
+      }
+    }
+  }
+}
+
+// === Hero Section ===
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem 5%;
+  min-height: 80vh;
+  gap: 2rem;
+  background-color: $gray;
+
+  .hero-text {
+    flex: 1 1 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    h1 {
+      font-size: 3rem;
+      color: $gold;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #ccc;
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+    }
+
+    button {
+      background-color: $gold;
+      color: black;
+      font-weight: bold;
+    }
+  }
+
+  .hero-image {
+    flex: 1 1 40%;
+    text-align: center;
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+    }
+  }
+}
+
+// === Section Titles & Base Styling ===
+.models, .tech, .test-drive {
+  padding: 4rem 5%;
+  text-align: center;
+
+  h2 {
+    font-size: 2.2rem;
+    color: $gold;
+    font-family: 'Georgia', serif;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+  }
+}
+
+// === Car Model Grid (Proper Alignment) ===
+.model-grid {
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+
+  mat-card {
+    background-color: $charcoal; // Darker than gray, warmer than black
+    color: $cream;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    mat-card-title {
+      color: $gold;
+      font-size: 1.2rem;
+    }
+
+    mat-card-content p {
+      color: #ccc;
+    }
+
+    mat-card-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding: 1rem;
+
+      button {
+        color: $accent;
+        font-weight: 500;
+      }
+    }
+
+    img {
+      height: 180px;
+      object-fit: cover;
+    }
+  }
+}
+
+.tech {
+    background-color: $gray;
+    padding: 4rem 5%;
+    text-align: center;
+  
+    h2 {
+      font-size: 2rem;
+      color: $gold;
+      margin-bottom: 2rem;
+    }
+  
+    mat-accordion {
+      max-width: 100vw;
+      margin: 0 auto;
+      display: block;
+    }
+  
+    mat-expansion-panel {
+      background-color: $charcoal;
+      color: $cream;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+  
+      mat-expansion-panel-header {
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: $gold;
+  align-items: center;
+        .mat-expansion-indicator::after {
+          color: $gold;
+        }
+      }
+  
+      .mat-expansion-panel-content {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        color: $cream;
+      }
+    }
+  }
+
+// === Test Drive Form Section ===
+.test-drive {
+    background-color: $dark;
+    padding: 4rem 5%;
+    text-align: center;
+  
+    h2 {
+      font-size: 2.2rem;
+      color: $gold;
+      font-family: 'Georgia', serif;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+    }
+  
+    .test-drive-form {
+      background-color: $charcoal;
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  
+      mat-form-field {
+        width: 100%;
+  
+        .mat-form-field-label {
+          color: $gold !important;
+        }
+  
+        .mat-input-element {
+          color: $cream;
+        }
+  
+        .mat-form-field-underline {
+          background-color: $gold;
+        }
+      }
+  
+      button {
+        background-color: $gold;
+        color: black;
+        font-weight: bold;
+        align-self: flex-start;
+        padding: 0.5rem 1.5rem;
+      }
+    }
+  }
+
+// === Footer ===
+.footer {
+  background-color: #111;
+  color: #aaa;
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.9rem;
+  border-top: 1px solid #333;
+}
+
+// === Responsive Adjustments ===
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+
+    .hero-text, .hero-image {
+      flex: 1 1 100%;
+    }
+
+    .hero-text h1 {
+      font-size: 2.2rem;
+    }
+
+    .hero-text p {
+      font-size: 1.1rem;
+    }
+  }
+
+  .model-grid {
+    grid-template-columns: 1fr;
+  }
+}

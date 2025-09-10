@@ -2,3 +2,38 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* src/styles.css */
+// @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Lora:ital@0;1&family=Montserrat:wght@400;500&display=swap');
+
+// body {
+//   margin: 0;
+//   padding: 20px 0; /* Add some vertical padding to see the component clearly */
+//   font-family: 'Montserrat', sans-serif;
+//   background-color: #e0e0e0; /* A neutral gray to see the page container's shadow */
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #fff;
+    color: #000;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  button {
+    cursor: pointer;
+    border: none;
+    background: none;
+  }

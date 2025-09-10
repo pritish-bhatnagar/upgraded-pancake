@@ -1,0 +1,59 @@
+<!-- <div #mapElement class="map" style="width: 100%; height: 100vh;"></div> -->
+
+<!-- <div class="controls">
+    <label for="layer-select">Choose Layer:</label>
+    <select id="layer-select" (change)="onLayerChange($event)">
+      <option *ngFor="let layer of availableLayers" [value]="layer.id">
+        {{ layer.label }}
+      </option>
+    </select>
+  </div>
+  
+  <div #mapElement class="map-container"></div> -->
+<!-- 
+
+  <div class="map-controls">
+    <label for="layerSelect">Select Layer:</label>
+    <select id="layerSelect" (change)="onLayerChange($event.target.value)">
+      <option *ngFor="let layer of availableLayers" [value]="layer.id" [selected]="layer.id === selectedLayer.id">
+        {{ layer.label }}
+      </option>
+    </select>
+  </div>
+  
+  <div #mapElement class="map-container"></div> -->
+
+
+  <div class="map-controls">
+    <label for="planetSelect">Select Planet:</label>
+    <select id="planetSelect" (change)="onPlanetChange($event.target.value)">
+      <option *ngFor="let planet of planets" [value]="planet" [selected]="planet === selectedPlanet">
+        {{ planet | titlecase }}
+      </option>
+    </select>
+  
+    <label for="layerSelect">Select Layer:</label>
+    <select id="layerSelect" (change)="onLayerChange($event.target.value)">
+      <option *ngFor="let layer of availableLayers" [value]="layer.id" [selected]="layer.id === selectedLayer.id">
+        {{ layer.label }}
+      </option>
+    </select>
+  </div>
+  
+  <div #mapElement class="map-container"></div> 
+
+  <!-- <div>
+    <label>Planet:</label>
+    <select [(ngModel)]="selectedPlanet" (change)="onPlanetChange(selectedPlanet)">
+      <option *ngFor="let planet of planets" [value]="planet">{{ planet }}</option>
+    </select>
+  
+    <label>Layer:</label>
+    <select [(ngModel)]="selectedLayer.id" (change)="onLayerChange(selectedLayer.id)">
+      <option *ngFor="let layer of availableLayers" [value]="layer.id">
+        {{ layer.label }}
+      </option>
+    </select>
+  </div>
+  
+  <div #mapElement style="width: 100%; height: 80vh; margin-top: 1rem;"></div> -->

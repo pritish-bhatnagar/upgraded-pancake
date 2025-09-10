@@ -1,0 +1,29 @@
+<div class="search-container">
+    <input
+      [(ngModel)]="query"
+      placeholder="Search NASA media..."
+      (keyup.enter)="search()"
+    />
+    <button (click)="search()">Search</button>
+  </div>
+  
+  <div *ngIf="loading">Loading...</div>
+  
+  <div class="media-grid">
+    <ng-container *ngFor="let item of results">
+      <div class="media-item">
+        <img
+          *ngIf="item.data[0].media_type === 'image'"
+          [src]="item.links[0].href"
+          [alt]="item.data[0].title"
+        />
+  
+        <video
+          *ngIf="item.data[0].media_type === 'video' && item.videoUrl"
+          [src]="item.videoUrl"
+          controls
+          muted
+        ></video>
+      </div>
+    </ng-container>
+  </div>

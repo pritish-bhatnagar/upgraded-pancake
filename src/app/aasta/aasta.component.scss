@@ -1,0 +1,133 @@
+:host {
+    display: block;
+    font-family: 'Georgia', serif;
+    background: #fefefe;
+    color: #2c2c2c;
+  }
+  
+  // Color Palette
+  $beige: #e8d7cc;
+  $black: #111;
+  $rose: #c6a392;
+  
+  .top-bar {
+    background: #f9f6f1;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+  
+    .logo {
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+  
+    nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+  
+      a {
+        text-decoration: none;
+        color: $black;
+        font-weight: 500;
+      }
+  
+      .contact-btn {
+        padding: 0.5rem 1rem;
+        background: $black;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+    }
+  }
+  
+  .hero {
+    display: flex;
+    background: $beige;
+    padding: 4rem 2rem;
+    align-items: center;
+    flex-wrap: wrap;
+  
+    .hero-img img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+  
+    .hero-content {
+      flex: 1;
+      padding: 2rem;
+  
+      .subtitle {
+        font-style: italic;
+        color: $rose;
+      }
+  
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 500;
+        margin: 1rem 0;
+      }
+  
+      p {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+      }
+  
+      .work-btn {
+        padding: 0.75rem 1.5rem;
+        background: $rose;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+    }
+  }
+  
+  .gallery {
+    padding: 3rem 2rem;
+    background: #fafafa;
+  
+    h2 {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+  
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+  
+      img {
+        width: 100%;
+        border-radius: 8px;
+        object-fit: cover;
+        height: 180px;
+      }
+    }
+  }
+  
+  .quotes {
+    background: $beige;
+    padding: 2rem;
+  
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+  
+    blockquote {
+      font-style: italic;
+      font-size: 1.2rem;
+      text-align: center;
+      margin: 1rem auto;
+      max-width: 600px;
+      color: #333;
+    }
+  }

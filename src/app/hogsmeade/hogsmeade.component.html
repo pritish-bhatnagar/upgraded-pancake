@@ -1,0 +1,91 @@
+<div class="page-container">
+    <!-- HEADER -->
+    <mat-toolbar class="topbar">
+      <span class="brand">NOVARA Motors</span>
+      <span class="spacer"></span>
+      <nav>
+        <button mat-button>Models</button>
+        <button mat-button>Technology</button>
+        <button mat-button>Test Drive</button>
+        <button mat-button>Contact</button>
+      </nav>
+    </mat-toolbar>
+  
+    <!-- HERO SECTION -->
+    <section class="hero" [@fadeIn]>
+      <div class="hero-text">
+        <h1>Experience the Future of Driving</h1>
+        <p>Performance. Precision. Prestige.</p>
+        <button mat-raised-button color="accent">Explore Models</button>
+      </div>
+      <div class="hero-image">
+        <img src="assets/novara-main.png" alt="Luxury Car" />
+      </div>
+    </section>
+    
+  
+    <!-- MODELS -->
+    <section class="models" [@fadeIn]>
+      <h2>Our Models</h2>
+      <div class="model-grid">
+        <mat-card *ngFor="let car of carModels">
+          <mat-card-header>
+            <mat-card-title>{{ car.name }}</mat-card-title>
+          </mat-card-header>
+          <img mat-card-image [src]="car.image" [alt]="car.name" />
+          <mat-card-content>
+            <p>{{ car.description }}</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button color="accent">Learn More</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </section>
+  
+    <!-- TECHNOLOGY -->
+    <section class="tech" @fadeIn>
+        <h2>Technology</h2>
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let tech of ['AI Drive Assist', 'Carbon Ceramic Brakes', 'Smart Climate Control']">
+            <mat-expansion-panel-header>
+              {{ tech }}
+            </mat-expansion-panel-header>
+            <p>
+              Experience state-of-the-art {{ tech.toLowerCase() }} that redefines what it means to drive a luxury car.
+            </p>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </section>
+  
+      <section class="test-drive" @fadeIn>
+        <h2>Book a Test Drive</h2>
+        <form class="test-drive-form">
+          <mat-form-field appearance="fill">
+            <mat-label>Full Name</mat-label>
+            <input matInput placeholder="John Doe" />
+          </mat-form-field>
+      
+          <mat-form-field appearance="fill">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" placeholder="you@example.com" />
+          </mat-form-field>
+      
+          <mat-form-field appearance="fill">
+            <mat-label>Phone Number</mat-label>
+            <input matInput type="tel" placeholder="+91 9876543210" />
+          </mat-form-field>
+      
+          <mat-form-field appearance="fill">
+            <mat-label>Select Model</mat-label>
+            <mat-select>
+              <mat-option *ngFor="let option of testDriveOptions" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+      
+          <button mat-raised-button type="submit">Submit</button>
+        </form>
+      </section>
+  </div>

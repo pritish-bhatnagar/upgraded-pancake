@@ -1,0 +1,43 @@
+<ng-container *ngFor="let section of sections">
+  <div #lazySection></div>
+  <div class="hero-slide-wrapper"  *ngIf="section.tag.toLowerCase() === 'hero'" >
+   
+    <div class="hero-slide" *ngFor="let slide of section.items; let i = index" [ngClass]="{ active: i === 0 }">
+      <!-- <img [src]="getMediaUrl(slide)" [alt]="slide.title" class="hero-image" />
+      <div class="hero-overlay"> -->
+        <h1 class="hero-title">{{ slide.title }}</h1>
+        <p class="hero-description">{{ slide.description }}</p>
+      <!-- </div> -->
+    </div>
+  </div>
+  </ng-container>
+
+<section *ngFor="let section of sections; let i = index">
+  
+  <div #lazySection></div>
+
+  <ng-container *ngIf="section.loaded">
+    <h2 class="section-title">{{ section.tag }}</h2>
+
+    <!-- Show Section -->
+    <div *ngIf="section.type === 'show'" class="show-grid">
+      <div class="show-card" *ngFor="let show of section.items">
+        <img
+          class="media-img"
+          [src]="getMediaUrl(show)"
+          [alt]="show.title"
+        />
+        <h4 class="show-title">{{ show.title }}</h4>
+      </div>
+    </div>
+
+    <!-- Episode Section -->
+    <div *ngIf="section.type === 'episode'" class="episode-grid">
+      <div class="episode-card" *ngFor="let ep of section.items">
+        <h4>{{ ep.title }}</h4>
+        <p>Season {{ ep.seasonNumber }} · Episode {{ ep.episodeNumber }}</p>
+        <p>{{ ep.description }}</p>
+      </div>
+    </div>
+  </ng-container>
+</section>

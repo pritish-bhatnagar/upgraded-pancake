@@ -1,0 +1,45 @@
+<header class="top-bar">
+    <div class="logo">Pritish Bhatnagar</div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Services</a>
+      <a href="#">Courses</a>
+      <a href="#">About</a>
+      <a href="#">Blog</a>
+      <a href="#">Instagram</a>
+      <button class="contact-btn">Contact Me</button>
+    </nav>
+  </header>
+  
+  <section class="hero">
+    <div class="hero-img">
+      <img src="https://placehold.co/500x600" alt="profile photo" />
+    </div>
+    <div class="hero-content">
+      <h4 class="subtitle">The Founder</h4>
+      <h1>I’m Katie—Your New Social Media Manager</h1>
+      <p>
+        Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
+        porta dolor. Curabitur ligula sapien, tincidunt non, euismod vitae.
+      </p>
+      <p>
+        Donec vitae sapien ut libero venenatis faucibus. Etiam sit amet orci eget eros
+        faucibus tincidunt. Aenean commodo ligula eget dolor.
+      </p>
+      <button class="work-btn">Work With Me</button>
+    </div>
+  </section>
+  
+  <section class="gallery">
+    <h2>My Gallery</h2>
+    <div class="gallery-grid">
+      <img *ngFor="let image of galleryImages" [src]="image" alt="gallery image" />
+    </div>
+  </section>
+  
+  <section class="quotes">
+    <h2>My Quotes</h2>
+    <blockquote *ngFor="let quote of myQuotes">
+      “{{ quote }}”
+    </blockquote>
+  </section>

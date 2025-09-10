@@ -1,0 +1,67 @@
+<!-- Lottie Loader -->
+<div *ngIf="loading" class="flex items-center justify-center h-screen bg-black">
+    <ng-lottie 
+      [options]="{ path: 'https://assets1.lottiefiles.com/packages/lf20_touohxv0.json' }"
+      width="200px" 
+      height="200px">
+    </ng-lottie>
+  </div>
+  
+  <!-- Main Page -->
+  <div *ngIf="!loading" class="homepage bg-gray-900 text-white min-h-screen">
+    <!-- Navbar -->
+    <p-toolbar styleClass="bg-gray-800 text-white px-6">
+      <div class="p-toolbar-group-left font-bold text-xl">StreamFlix</div>
+      <div class="p-toolbar-group-right flex gap-4">
+        <button pButton label="Home" class="p-button-text"></button>
+        <button pButton label="TV Shows" class="p-button-text"></button>
+        <button pButton label="Movies" class="p-button-text"></button>
+        <button pButton label="My List" class="p-button-text"></button>
+      </div>
+    </p-toolbar>
+  
+    <!-- Hero Banner -->
+    <div class="hero relative h-[70vh] bg-cover bg-center"
+         style="background-image: url('https://picsum.photos/1600/900');">
+      <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+      <div class="absolute bottom-10 left-10">
+        <h1 class="text-4xl font-extrabold mb-4">Featured Show</h1>
+        <p class="max-w-lg mb-4">Watch the latest trending series exclusively on StreamFlix.</p>
+        <button pButton label="▶ Play" class="mr-4 p-button-rounded p-button-danger"></button>
+        <button pButton label="ℹ More Info" class="p-button-rounded p-button-outlined"></button>
+      </div>
+    </div>
+  
+    <!-- Carousels -->
+    <div class="px-6 mt-10 space-y-12">
+      <!-- Trending Now -->
+      <div>
+        <h2 class="text-2xl font-semibold mb-4">Trending Now</h2>
+        <p-carousel [value]="trending" [numVisible]="6" [numScroll]="6"
+                    [circular]="true" [responsiveOptions]="responsiveOptions">
+          <ng-template pTemplate="item" let-movie>
+            <div class="movie-card cursor-pointer">
+              <img [src]="movie.image" alt="{{ movie.title }}"
+                   class="rounded-lg shadow-lg hover:scale-105 transition-transform"/>
+              <div class="mt-2 text-sm text-center">{{ movie.title }}</div>
+            </div>
+          </ng-template>
+        </p-carousel>
+      </div>
+  
+      <!-- Top Picks -->
+      <div>
+        <h2 class="text-2xl font-semibold mb-4">Top Picks For You</h2>
+        <p-carousel [value]="topPicks" [numVisible]="6" [numScroll]="6"
+                    [circular]="true" [responsiveOptions]="responsiveOptions">
+          <ng-template pTemplate="item" let-movie>
+            <div class="movie-card cursor-pointer">
+              <img [src]="movie.image" alt="{{ movie.title }}"
+                   class="rounded-lg shadow-lg hover:scale-105 transition-transform"/>
+              <div class="mt-2 text-sm text-center">{{ movie.title }}</div>
+            </div>
+          </ng-template>
+        </p-carousel>
+      </div>
+    </div>
+  </div>

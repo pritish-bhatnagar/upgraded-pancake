@@ -1,0 +1,25 @@
+.tag-manager-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+  
+    .full-width {
+      width: 100%;
+    }
+  
+    .json-textarea {
+      width: 100%;
+      font-family: monospace;
+      margin: 10px 0;
+    }
+  
+    .desc {
+      color: #777;
+      font-size: 0.9em;
+      margin-left: 8px;
+    }
+  
+    mat-card {
+      margin-bottom: 20px;
+    }
+  }
