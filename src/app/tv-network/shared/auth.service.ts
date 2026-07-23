@@ -77,6 +77,34 @@ export class AuthService {
   getUserId(): string | null {
     return this.auth.currentUser?.uid || null;
   }
+  async syncWithBackend(): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) return;
+
+    // Get Firebase ID token
+    const firebaseToken = await user.getIdToken();
+
+    // Send token to backend for verification and receive backend JWT
+    const response = await fetch(`http://161.118.182.124:3000/api/auth/sync`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${firebaseToken}`
+      },
+      body: JSON.stringify({})
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to sync with backend');
+    }
+
+    // Extract backend-issued JWT from response
+    const data = await response.json();
+    if (data.token) {
+      // Store backend JWT in localStorage for all subsequent API calls
+      localStorage.setItem('auth_token', data.token);
+    }
+  }
   signUpWithEmail(userData: {
     name: string;
     email: string;

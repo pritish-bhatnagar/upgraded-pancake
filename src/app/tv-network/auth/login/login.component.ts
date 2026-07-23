@@ -2,8 +2,6 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/tv-network/shared/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { getAuth } from 'firebase/auth';
-import { get } from 'ol/proj';
 
 @Component({
   selector: 'app-login',
@@ -33,6 +31,7 @@ export class LoginComponent {
     const { email, password } = this.loginForm.value;
     try {
       await this.authService.login(email, password);
+      await this.authService.syncWithBackend();
       this.router.navigate(['/']);
     } catch (err: any) {
       this.error = err.message || 'Login failed';
@@ -44,6 +43,7 @@ export class LoginComponent {
   async loginWithGoogle() {
     try {
       await this.authService.loginWithGoogle();
+      await this.authService.syncWithBackend();
       this.router.navigate(['/']);
     } catch (err: any) {
       this.error = err.message || 'Google login failed';

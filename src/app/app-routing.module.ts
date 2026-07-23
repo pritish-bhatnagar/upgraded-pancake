@@ -8,6 +8,10 @@ import { AastaComponent } from './aasta/aasta.component';
 import { HogsmeadeComponent } from './hogsmeade/hogsmeade.component';
 import { DarcyComponent } from './darcy/darcy.component';
 import { Soap2dayComponent } from './soap2day/soap2day.component';
+import { CatalogSeederComponent } from './catalog-seeder/catalog-seeder.component';
+import { CatalogHomeComponent } from './catalog-home/catalog-home.component';
+import { StarryBackgroundComponent } from './starry-background/starry-background.component';
+import { MyflixerComponent } from './myflixer/myflixer.component';
 
 const routes: Routes = [
   { path: 'search', component: NasaSearchComponent },
@@ -18,6 +22,10 @@ const routes: Routes = [
   { path: 'shop', component: HogsmeadeComponent },
   { path: 'darcy', component: DarcyComponent },
   { path: 'soap2day', component: Soap2dayComponent },
+  {path : 'seeder', component: CatalogSeederComponent},
+  {path: 'catalog', component: CatalogHomeComponent},
+  {path: 'stars' ,  component: StarryBackgroundComponent},
+  {path : 'myflixer' , component: MyflixerComponent},
   
     {
       path: 'tv-network',

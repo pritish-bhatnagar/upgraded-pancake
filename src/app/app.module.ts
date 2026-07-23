@@ -4,7 +4,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AdsenseModule } from 'ng2-adsense';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
@@ -53,6 +54,9 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 // ngx-lottie
 import { LottieModule } from 'ngx-lottie';
 import player from 'lottie-web';
+import { StarryBackgroundComponent } from './starry-background/starry-background.component';
+import { MyflixerComponent } from './myflixer/myflixer.component';
+import { SafePipe } from './myflixer/safe.pipe';
 // import { ButtonModule } from 'primeng/button';
 export function playerFactory() {
   return player;
@@ -85,7 +89,9 @@ export function playerFactory() {
     AastaComponent,
     HogsmeadeComponent,
     DarcyComponent,
-    Soap2dayComponent,
+    StarryBackgroundComponent,
+    MyflixerComponent
+    
     // TvNetworkComponent
   ],
   imports: [
@@ -116,9 +122,17 @@ export function playerFactory() {
     // CarouselModule,
     // ButtonModule,
     MatToolbarModule,
-    LottieModule.forRoot({ player: playerFactory })
+    SafePipe,
+    LottieModule.forRoot({ player: playerFactory }),
+    
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

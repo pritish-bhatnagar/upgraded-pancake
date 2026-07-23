@@ -1,43 +1,276 @@
-<ng-container *ngFor="let section of sections">
-  <div #lazySection></div>
-  <div class="hero-slide-wrapper"  *ngIf="section.tag.toLowerCase() === 'hero'" >
-   
-    <div class="hero-slide" *ngFor="let slide of section.items; let i = index" [ngClass]="{ active: i === 0 }">
-      <!-- <img [src]="getMediaUrl(slide)" [alt]="slide.title" class="hero-image" />
-      <div class="hero-overlay"> -->
-        <h1 class="hero-title">{{ slide.title }}</h1>
-        <p class="hero-description">{{ slide.description }}</p>
-      <!-- </div> -->
+<div class="home-container">
+  <!-- NAVBAR -->
+  <nav
+    class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top"
+    [ngClass]="{ 'bg-transparent': !isScrolled, 'scrolled': isScrolled }"
+  >
+    <div class="container-fluid align-items-center">
+      <!-- Mobile: menu toggler opens Offcanvas -->
+      <button
+        class="navbar-toggler me-2"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#mainMenu"
+        aria-controls="mainMenu"
+        aria-label="Open menu"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Brand -->
+      <a class="navbar-brand fw-bold" href="#">Streamline</a>
+
+      <!-- Mobile: CTA -->
+      <a href="#" class="btn btn-warning btn-sm ms-auto d-lg-none try-btn">
+        TRY STREAMLINE +
+      </a>
+
+      <!-- Desktop: search + auth -->
+      <div class="d-none d-lg-flex align-items-center ms-auto gap-2">
+        <form class="d-flex search-bar" role="search">
+          <input
+            class="form-control"
+            type="search"
+            placeholder="Things to watch..."
+            aria-label="Search"
+          />
+          <input
+            class="form-control"
+            type="text"
+            placeholder="Location"
+            aria-label="Location"
+          />
+          <button class="btn btn-danger" type="submit" aria-label="Search">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+        <div class="d-none d-lg-flex ms-2">
+          <a href="#" class="btn btn-outline-light me-2">Log In</a>
+          <a href="#" class="btn btn-danger">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Offcanvas (mobile menu + search) -->
+  <div
+    class="offcanvas offcanvas-start text-bg-dark"
+    tabindex="-1"
+    id="mainMenu"
+    aria-labelledby="mainMenuLabel"
+  >
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="mainMenuLabel">Browse</h5>
+      <button
+        type="button"
+        class="btn-close btn-close-white"
+        data-bs-dismiss="offcanvas"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div class="offcanvas-body">
+      <form class="search-bar mb-3" role="search">
+        <div class="d-flex flex-column gap-2">
+          <input
+            class="form-control"
+            type="search"
+            placeholder="Things to watch..."
+            aria-label="Search"
+          />
+          <input
+            class="form-control"
+            type="text"
+            placeholder="Location"
+            aria-label="Location"
+          />
+          <button class="btn btn-danger w-100" type="submit" aria-label="Search">
+            <i class="bi bi-search me-1"></i> Search
+          </button>
+        </div>
+      </form>
+
+      <hr class="border-secondary" />
+
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="#">Shows</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Movies</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Live TV</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">News</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Sports</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Schedule</a></li>
+      </ul>
     </div>
   </div>
+
+  <!-- ================= HERO ================= -->
+  <ng-container *ngFor="let section of sections; let sIndex = index">
+    <div #lazySection></div>
+
+    <div
+      *ngIf="section.tag?.toLowerCase() === 'hero'"
+      [id]="'carouselHero' + sIndex"
+      class="carousel slide hero-carousel"
+      data-bs-ride="carousel"
+      data-bs-interval="5000"
+      data-bs-pause="hover"
+      data-bs-touch="true"
+    >
+      <div class="left-gradient" aria-hidden="true"></div>
+
+      <!-- Vertical progress indicators -->
+      <div class="carousel-indicators vertical">
+        <button
+          *ngFor="let slide of section.items; let i = index"
+          type="button"
+          [attr.data-bs-target]="'#carouselHero' + sIndex"
+          [attr.data-bs-slide-to]="i"
+          [class.active]="i === 0"
+          [attr.aria-current]="i === 0 ? 'true' : null"
+          [attr.aria-label]="'Go to slide ' + (i + 1)"
+        >
+          <span class="progress-bar" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <!-- Slides -->
+      <div class="carousel-inner">
+        <div
+          *ngFor="let slide of section.items; let i = index"
+          class="carousel-item"
+          [class.active]="i === 0"
+        >
+          <img
+            [src]="getMediaUrl(slide, 'banner')"
+            class="d-block w-100 hero-img"
+            [alt]="slide?.title || ('Slide ' + (i + 1))"
+            [attr.loading]="i === 0 ? 'eager' : 'lazy'"
+            [attr.fetchpriority]="i === 0 ? 'high' : null"
+            decoding="async"
+          />
+
+          <div class="hero-overlay">
+            <div class="hero-text">
+              <ng-container *ngIf="slide?.titleImage; else textTitle">
+                <img
+                  [src]="slide.titleImage"
+                  [alt]="slide?.title || 'Title image'"
+                  class="title-image"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </ng-container>
+              <ng-template #textTitle>
+                <h2 class="hero-title">{{ slide?.title }}</h2>
+              </ng-template>
+
+              <p class="hero-info fw-semibold" *ngIf="slide?.info">
+                {{ slide.info }}
+              </p>
+              <p class="hero-description clamp-3" *ngIf="slide?.description">
+                {{ slide.description }}
+              </p>
+
+              <div class="hero-buttons">
+                <button class="btn btn-primary btn-sm me-2" aria-label="Watch now">
+                  Watch Now
+                </button>
+                <button
+                  *ngIf="slide?.isLive"
+                  class="btn btn-danger btn-sm"
+                  aria-label="Watch live"
+                >
+                  ● Live
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <button
+        class="carousel-control-prev"
+        type="button"
+        [attr.data-bs-target]="'#carouselHero' + sIndex"
+        data-bs-slide="prev"
+        aria-label="Previous slide"
+      >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        [attr.data-bs-target]="'#carouselHero' + sIndex"
+        data-bs-slide="next"
+        aria-label="Next slide"
+      >
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      </button>
+    </div>
   </ng-container>
 
-<section *ngFor="let section of sections; let i = index">
-  
-  <div #lazySection></div>
 
-  <ng-container *ngIf="section.loaded">
-    <h2 class="section-title">{{ section.tag }}</h2>
+  <!-- ================ SECTIONS ================ -->
+  <ng-container *ngFor="let section of sections; let i = index">
+    <section *ngIf="section.loaded && section.items?.length > 0" class="content-section">
+      <div #lazySection></div>
 
-    <!-- Show Section -->
-    <div *ngIf="section.type === 'show'" class="show-grid">
-      <div class="show-card" *ngFor="let show of section.items">
-        <img
-          class="media-img"
-          [src]="getMediaUrl(show)"
-          [alt]="show.title"
-        />
-        <h4 class="show-title">{{ show.title }}</h4>
+      <!-- Section Title -->
+      <h2 class="fw-bold text-white mb-3 ps-2 section-heading">
+        {{ section.tag }}
+      </h2>
+
+      <!-- SHOWS (horizontal scroll + snap) -->
+      <div *ngIf="section.type === 'show'" class="position-relative shows-wrap">
+        <!-- Left Scroll Button -->
+        <button
+          class="btn btn-dark btn-sm position-absolute top-50 start-0 translate-middle-y rounded-circle shadow edge-control"
+          *ngIf="section.items.length > visibleCards"
+          (click)="scrollLeft(i)"
+          aria-label="Scroll left"
+        >
+          <i class="bi bi-chevron-left fs-5"></i>
+        </button>
+
+        <!-- Scrollable Row -->
+        <div class="d-flex overflow-auto px-4 show-scroll" #scrollableSection role="region" [attr.aria-label]="section.tag + ' carousel'">
+          <div
+            *ngFor="let show of section.items"
+            class="poster-card me-3 flex-shrink-0"
+          >
+            <img
+              [src]="getMediaUrl(show, 'Poster')"
+              [alt]="show?.title || 'Poster'"
+              class="poster-img"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="poster-overlay">
+              <h6 class="mb-1 text-truncate">{{ show?.title }}</h6>
+              <button class="btn btn-sm btn-primary">Watch Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Scroll Button -->
+        <button
+          class="btn btn-dark btn-sm position-absolute top-50 end-0 translate-middle-y rounded-circle shadow edge-control"
+          *ngIf="section.items.length > visibleCards"
+          (click)="scrollRight(i)"
+          aria-label="Scroll right"
+        >
+          <i class="bi bi-chevron-right fs-5"></i>
+        </button>
       </div>
-    </div>
 
-    <!-- Episode Section -->
-    <div *ngIf="section.type === 'episode'" class="episode-grid">
-      <div class="episode-card" *ngFor="let ep of section.items">
-        <h4>{{ ep.title }}</h4>
-        <p>Season {{ ep.seasonNumber }} · Episode {{ ep.episodeNumber }}</p>
-        <p>{{ ep.description }}</p>
-      </div>
-    </div>
+   
+    </section>
+
+
+
+
+    
   </ng-container>
-</section>
+
+</div>
+<app-soap2day></app-soap2day>

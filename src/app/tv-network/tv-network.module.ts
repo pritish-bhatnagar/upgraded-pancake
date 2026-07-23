@@ -34,6 +34,7 @@ import { RoleGuard } from './shared/role.guard';
 import { AppModule } from '../app.module';
 import { MaterialModule } from '../material/material.module';
 import { MatCardModule } from '@angular/material/card';
+import { Soap2dayComponent } from '../soap2day/soap2day.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { MatCardModule } from '@angular/material/card';
     ProfileComponent,
     NavbarComponent,
     SidebarComponent,
-    CommentBoxComponent
+    CommentBoxComponent,
+    Soap2dayComponent
   ],
   imports: [
     CommonModule,
@@ -59,7 +61,7 @@ import { MatCardModule } from '@angular/material/card';
     RouterModule,
     TvNetworkRoutingModule,
     MaterialModule,
-    MatCardModule
+    MatCardModule,
   ],
   providers: [
     AuthService,

@@ -22,4 +22,5 @@ const googleProvider = new GoogleAuthProvider();
   const firestore = getFirestore(app);
 
 
+
 export { auth, googleProvider, firebaseConfig, cloudinary, firestore, app };
