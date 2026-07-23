@@ -20,9 +20,10 @@
 
 <a class="twitter-timeline" [href]="twitterLink">Loading...</a> -->
 <div>
-<app-firebase></app-firebase>
+<app-firebase [showNavbar]="showNavbar"></app-firebase>
 <!-- <app-firebase-ui></app-firebase-ui> -->
 <!-- <app-messages></app-messages> -->
 <router-outlet></router-outlet>
+
 <app-bottomsheet></app-bottomsheet>
 </div>

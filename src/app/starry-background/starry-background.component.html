@@ -1,0 +1,45 @@
+<!-- starry-background.component.html -->
+<div class="starfield" [class.parallax-off]="!enableParallax">
+    <div class="layer layer--far">
+      <div class="layer__inner" data-depth="0.2">
+        <span class="star star--small"
+          *ngFor="let s of small"
+          [ngStyle]="{
+            left: s.xPct + '%', top: s.yPct + '%',
+            width: s.sizePx + 'px', height: s.sizePx + 'px',
+            animationDelay: s.delayS + 's', animationDuration: s.durationS + 's',
+            filter: 'blur(' + s.blurPx + 'px)'
+          }"></span>
+      </div>
+    </div>
+  
+    <div class="layer layer--mid">
+      <div class="layer__inner" data-depth="0.5">
+        <span class="star star--medium"
+          *ngFor="let s of medium"
+          [ngStyle]="{
+            left: s.xPct + '%', top: s.yPct + '%',
+            width: s.sizePx + 'px', height: s.sizePx + 'px',
+            animationDelay: s.delayS + 's', animationDuration: s.durationS + 's',
+            filter: 'blur(' + s.blurPx + 'px)'
+          }"></span>
+      </div>
+    </div>
+  
+    <div class="layer layer--near">
+      <div class="layer__inner" data-depth="0.9">
+        <span class="star star--large"
+          *ngFor="let s of large"
+          [ngStyle]="{
+            left: s.xPct + '%', top: s.yPct + '%',
+            width: s.sizePx + 'px', height: s.sizePx + 'px',
+            animationDelay: s.delayS + 's', animationDuration: s.durationS + 's',
+            filter: 'blur(' + s.blurPx + 'px)'
+          }"></span>
+      </div>
+    </div>
+  
+    <div class="vignette"></div>
+  </div>
+  
+  <ng-content></ng-content>

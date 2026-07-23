@@ -1,0 +1,67 @@
+:host { display: block; position: relative; min-height: 100dvh; }
+
+.starfield {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
+  background:
+    radial-gradient(1200px 800px at 70% 20%, #0c1530 0%, #060a1a 40%, #030714 100%),
+    radial-gradient(800px 600px at 20% 80%, rgba(22,30,60,0.8), transparent 60%),
+    #020414;
+}
+
+/* outer layer = slow automatic drift (CSS animation) */
+.layer { position: absolute; inset: 0; will-change: transform; }
+.layer--far  { animation: driftFar  160s linear infinite alternate; }
+.layer--mid  { animation: driftMid  120s linear infinite alternate; }
+.layer--near { animation: driftNear  90s  linear infinite alternate; }
+
+/* inner layer = mouse/gyro translation via CSS variables */
+.layer__inner {
+  position: absolute; inset: 0;
+  --tx: 0px; --ty: 0px; --scale: 1;
+  transform: translate3d(var(--tx), var(--ty), 0) scale(var(--scale));
+  will-change: transform;
+}
+
+/* stars (fast blink) */
+.star {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff, #e8ecff 40%, #cfd7ff 60%, transparent 70%);
+  opacity: 0.95;
+  animation-name: twinkleBlink;
+  animation-timing-function: steps(2, end);
+  animation-iteration-count: infinite;
+  box-shadow: 0 0 6px rgba(200,220,255,.4), 0 0 12px rgba(180,200,255,.25);
+  will-change: opacity, filter;
+}
+.star--small  { box-shadow: 0 0 4px rgba(200,220,255,.35), 0 0 8px rgba(180,200,255,.2); }
+.star--medium { box-shadow: 0 0 7px rgba(200,220,255,.45), 0 0 14px rgba(180,200,255,.28); }
+.star--large  { box-shadow: 0 0 10px rgba(200,220,255,.55), 0 0 18px rgba(180,200,255,.34); }
+
+@keyframes twinkleBlink {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50%      { opacity: 0.08; filter: brightness(0.6); }
+}
+
+/* slow drift keyframes */
+@keyframes driftFar  { from { transform: translate3d( 0%,  0%, 0) scale(1.00); }
+                       to   { transform: translate3d(-2%,  1.5%, 0) scale(1.03); } }
+@keyframes driftMid  { from { transform: translate3d( 0%,  0%, 0) scale(1.00); }
+                       to   { transform: translate3d( 3%, -2.0%, 0) scale(1.05); } }
+@keyframes driftNear { from { transform: translate3d( 0%,  0%, 0) scale(1.00); }
+                       to   { transform: translate3d(-4%, -3.0%, 0) scale(1.08); } }
+
+/* vignette */
+.vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(1200px 900px at 50% 50%, transparent 60%, rgba(0,0,0,0.25) 100%);
+  mix-blend-mode: multiply;
+}
+
+/* accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .layer { animation: none !important; }
+}
+
+/* toggle */
+.parallax-off .layer__inner { --tx: 0px; --ty: 0px; }
+.parallax-off .layer { animation: none !important; }

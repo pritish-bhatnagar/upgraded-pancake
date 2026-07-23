@@ -1,3 +1,7 @@
+
+.home-container{
+  background-color: #121212;
+}
 .section-title {
   font-size: 24px;
   margin: 24px 0 12px;
@@ -61,15 +65,6 @@
     border-radius: 12px;
   }
 
-  .hero-overlay {
-    position: absolute;
-    bottom: 20px;
-    left: 30px;
-    color: white;
-    background: rgba(0, 0, 0, 0.45);
-    padding: 1rem;
-    border-radius: 8px;
-  }
 
   .hero-title {
     font-size: 2rem;
@@ -81,4 +76,402 @@
     font-size: 1rem;
     margin-top: 0.5rem;
   }
+}
+.carousel img {
+  object-fit:fill;
+}
+
+.carousel-caption {
+  background: rgba(0, 0, 0, 0.5); // semi-transparent background
+  border-radius: 8px;
+  padding: 1rem;
+  bottom: 20%; // raise captions a bit above bottom
+}
+
+.carousel-caption h5 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.carousel-caption p {
+  font-size: 1.1rem;
+  color: #f1f1f1;
+}
+
+.carousel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 120px; /* height of gradient zone */
+  width: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+  z-index: 1;
+}
+
+
+.carousel::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 400px; /* height of gradient zone */
+  width: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,3), transparent);
+  z-index: 1;
+  pointer-events: none;
+}
+
+
+/* Left Gradient */
+.carousel .left-gradient {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 400px; /* adjust size */
+  background: linear-gradient(to right, rgba(0,0,0,0.7), transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.carousel-inner,
+.carousel-item,
+.carousel-item img {
+  height: 100vh;
+  object-fit: cover;
+}
+
+.navbar {
+  transition: background 0.3s ease-in-out;
+  color: #fff;
+  font-family: Proxima Nova Regular, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: .8px;
+  line-height: 18px;
+  z-index: 3;
+  flex-direction: column;
+}
+
+.bg-transparent {
+  background: transparent !important;
+}
+
+.navbar.scrolled {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+}
+
+.search-bar {
+  width: 100%;   /* full width on mobile */
+}
+
+@media (min-width: 992px) {
+  .search-bar {
+    width: 50%;   /* half width on desktop */
+  }
+}
+.try-btn {
+  font-size: 12px;       /* smaller text */
+  padding: 4px 10px;     /* less padding */
+  border-radius: 20px;   /* rounded pill style */
+  font-weight: 600;      /* make it bold so it still pops */
+}
+.custom-toggler {
+  border: none;           /* remove default border */
+  padding: 4px 8px;       /* make button smaller */
+  font-size: 1.4rem;      /* smaller icon */
+  background: transparent;
+}
+
+.custom-toggler:focus {
+  box-shadow: none;       /* remove bootstrap focus glow */
+}
+
+.custom-toggler i {
+  color: #fff;            /* white icon (change if needed) */
+}
+
+.search-bar input,
+.search-bar button {
+  border-radius: 20px;
+}
+// .navbar {
+//   background: rgba(0, 0, 0, 0.3); /* light tint */
+//   backdrop-filter: blur(6px); /* frosted glass effect */
+// }
+
+// .carousel-indicators{
+//   // justify-content: right;
+//   margin-bottom: 5rem;
+//   transform: rotate(90deg);
+//   .active {
+//     background-color: #0d6efd; // <-- your custom color
+//   }
+  
+// }
+
+
+
+// .carousel-indicators-vertical {
+//   position: absolute;
+//   top: 30%; /* adjust to align above hero details */
+//   left: 20px; /* stick to left side */
+//   transform: translateY(-50%);
+//   z-index: 3;
+
+//   display: flex;
+//   flex-direction: column;
+//   gap: 10px;
+// }
+
+// .carousel-indicators-vertical button {
+//   width: 12px;
+//   height: 12px;
+//   border-radius: 50%;
+//   border: none;
+//   background-color: rgba(255,255,255,0.5);
+//   transition: background-color 0.3s ease, transform 0.2s ease;
+// }
+
+// .carousel-indicators-vertical button.active {
+//   background-color: #fff; /* highlight active */
+//   transform: scale(1.2);
+// }
+
+
+
+
+// .carousel-indicators-vertical {
+//   position: absolute;
+//   top: 30%; /* adjust so it aligns with your hero details */
+//   left: 20px;
+//   transform: translateY(-50%);
+//   z-index: 3;
+
+//   display: flex;
+//   flex-direction: column;
+//   gap: 8px;
+// }
+
+// .carousel-indicators-vertical button {
+//   width: 3px;             /* thin vertical bar */
+//   height: 30px;           /* length of each bar */
+//   border: none;
+//   border-radius: 2px;
+//   background-color: rgba(255,255,255,0.4);
+//   transition: background-color 0.3s ease, height 0.3s ease;
+// }
+
+// .carousel-indicators-vertical button.active {
+//   background-color: #0d6efd;; /* highlight active bar */
+//   height: 40px;           /* make active bar longer */
+// }
+
+
+
+// .carousel-indicators-vertical {
+//   position: absolute;
+//   top: 30%;
+//   left: 20px;
+//   transform: translateY(-50%);
+//   z-index: 3;
+
+//   display: flex;
+//   flex-direction: column;
+//   gap: 10px;
+// }
+
+// .carousel-indicators-vertical button {
+//   position: relative;
+//   width: 4px;    /* thickness of bar */
+//   height: 40px;  /* bar height */
+//   padding: 0;
+//   border: none;
+//   background: rgba(255, 255, 255, 0.6);;
+//   cursor: pointer;
+// }
+
+// .carousel-indicators-vertical .progress-bar {
+//   position: absolute;
+//   bottom: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 0%;
+//   background-color: #0d6efd;
+//   transition: height 0.1s linear;
+// }
+
+// /* Active slide animates */
+// .carousel-indicators-vertical button.active .progress-bar {
+//   animation: fillBar 2s linear forwards; /* match your carousel interval */
+// }
+
+// @keyframes fillBar {
+//   from {
+//     height: 0%;
+//   }
+//   to {
+//     height: 100%;
+//   }
+// }
+
+
+
+.carousel-indicators {
+  position: absolute;
+  top: 50%;
+  left: 25px; // adjust distance from left
+  transform: translateY(-50%);
+  flex-direction: column;   // stack vertically
+  margin: 0;
+  padding: 0;
+  gap: 8px;                // spacing between indicators
+  width: 10px;
+  z-index: 3;
+
+  button {
+    width: 10px;
+    height: 40px;
+    position: relative;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 2px;
+    overflow: hidden;
+    padding: 0;
+
+    // inner progress bar
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 0%;
+      background-color: #0d6efd;
+      transition: height 0.2s ease;
+    }
+
+    &.active::after {
+      animation: fillBar 5s linear forwards; // match your carousel interval
+    }
+  }
+}
+@keyframes fillBar {
+  from { height: 0%; }
+  to { height: 100%; }
+}
+
+
+/* 🔹 Mobile (switch to horizontal indicators at bottom) */
+@media (max-width: 768px) {
+  .carousel-indicators {
+    // top: auto;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row; /* horizontal */
+    gap: 6px;
+  }
+
+  .carousel-indicators button {
+    width: 40px;
+    height: 4px; /* horizontal bars */
+  }
+
+  .carousel-indicators .active {
+    height: 4px;
+    width: 60px;
+  }
+}
+
+.hero-overlay {
+  z-index: 2;
+  // background: rgba(0, 0, 0, 0.5); // semi-transparent background
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+  max-width: 65%;
+  text-align: left;
+  color: white;
+
+  .title-image {
+    max-width: 250px;
+    margin-bottom: 1rem;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+    font-weight: bold;
+  }
+
+  .hero-info {
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+    color: #00d86d;
+  }
+
+  .hero-description {
+    font-size: 18px;
+    margin: 1rem 0;
+    color: #FFF;
+  }
+
+  .hero-buttons {
+    margin-top: 1rem;
+  }
+}
+
+.show-scroll {
+  scroll-behavior: smooth;
+}
+
+.show-scroll::-webkit-scrollbar {
+  display: none; // hide scrollbar
+}
+
+.poster-card {
+  width: 160px;   /* adjust as per design */
+  height: 240px;  /* portrait ratio */
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #000;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.05);
+    z-index: 2;
+  }
+}
+
+.poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fills whole card */
+}
+
+.poster-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 0.5rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+}
+
+.poster-card:hover .poster-overlay {
+  opacity: 1;
 }

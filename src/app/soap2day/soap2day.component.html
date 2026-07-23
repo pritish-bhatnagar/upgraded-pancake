@@ -1,67 +1,245 @@
-<!-- Lottie Loader -->
-<div *ngIf="loading" class="flex items-center justify-center h-screen bg-black">
-    <ng-lottie 
-      [options]="{ path: 'https://assets1.lottiefiles.com/packages/lf20_touohxv0.json' }"
-      width="200px" 
-      height="200px">
-    </ng-lottie>
-  </div>
-  
-  <!-- Main Page -->
-  <div *ngIf="!loading" class="homepage bg-gray-900 text-white min-h-screen">
-    <!-- Navbar -->
-    <p-toolbar styleClass="bg-gray-800 text-white px-6">
-      <div class="p-toolbar-group-left font-bold text-xl">StreamFlix</div>
-      <div class="p-toolbar-group-right flex gap-4">
-        <button pButton label="Home" class="p-button-text"></button>
-        <button pButton label="TV Shows" class="p-button-text"></button>
-        <button pButton label="Movies" class="p-button-text"></button>
-        <button pButton label="My List" class="p-button-text"></button>
+<header class="app-header" [class.scrolled]="scrolled">
+    <!-- Row 1: Yelp-style -->
+    <nav class="navbar navbar-expand-lg navbar-dark nav-top"
+         [class.nav-glass]="scrolled"
+         [class.nav-transparent]="!scrolled">
+      <div class="container-fluid">
+        <!-- Mobile toggler (left) -->
+        <button class="navbar-toggler me-2 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvas" aria-controls="mainOffcanvas" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Center search form -->
+        <form class="d-flex me-auto flex-grow-1" role="search" style="max-width: 420px;">
+          <input class="form-control bg-dark-subtle border-0 text-white" 
+                 type="search" 
+                 placeholder="Search shows, sports, news" 
+                 aria-label="Search">
+          <button class="btn btn-primary ms-2" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+
+        <!-- Brand (centered) -->
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-1 mx-auto brand-centered" href="#">
+          <span class="logo-dot"></span>
+          <span>Stream<span class="text-primary">Hub</span></span>
+        </a>
+
+        <!-- Right actions -->
+        <div class="d-flex gap-2">
+          <a class="btn btn-outline-light fw-semibold" href="#">Log In</a>
+          <a class="btn btn-primary fw-semibold try-btn" href="#">Try StreamHub+</a>
+          <a class="btn btn-danger fw-semibold" href="#">Sign Up</a>
+        </div>
+
       </div>
-    </p-toolbar>
+    </nav>
   
-    <!-- Hero Banner -->
-    <div class="hero relative h-[70vh] bg-cover bg-center"
-         style="background-image: url('https://picsum.photos/1600/900');">
-      <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
-      <div class="absolute bottom-10 left-10">
-        <h1 class="text-4xl font-extrabold mb-4">Featured Show</h1>
-        <p class="max-w-lg mb-4">Watch the latest trending series exclusively on StreamFlix.</p>
-        <button pButton label="▶ Play" class="mr-4 p-button-rounded p-button-danger"></button>
-        <button pButton label="ℹ More Info" class="p-button-rounded p-button-outlined"></button>
+    <!-- Row 2: category rail (scrollable on mobile) -->
+    <div class="nav-row-2 border-top border-secondary-subtle">
+      <div class="container-fluid px-3 px-md-4">
+        <ul class="nav nav-pills gap-1 flex-nowrap overflow-auto justify-content-center category-nav">
+          <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Series</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Films</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Live</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">News</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Sports</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Kids</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Originals</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">My List</a></li>
+        </ul>
+      </div>
+    </div>
+  
+    <!-- Offcanvas (improved mobile expanded menu) -->
+    <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="mainOffcanvas" aria-labelledby="mainOffcanvasLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="mainOffcanvasLabel">Browse</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body d-flex flex-column gap-3">
+        <form class="d-flex" role="search">
+          <input class="form-control bg-dark-subtle border-0 text-white" type="search" placeholder="Search StreamHub" aria-label="Search">
+        </form>
+        <div class="list-group list-group-flush">
+          <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Home</a>
+          <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Series</a>
+          <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Films</a>
+          <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Live</a>
+          <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">News</a>
+          <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Sports</a>
+          <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Kids</a>
+          <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Originals</a>
+          <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">My List</a>
+        </div>
+        <a class="btn btn-primary fw-semibold mt-auto" href="#">Try StreamHub+</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== HERO (with top gradient for navbar contrast) ===================== -->
+  <section class="hero-wrapper position-relative">
+    <div class="hero-gradient-top"></div>
+  
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+      <!-- Right vertical indicators with progress bars -->
+      <div class="carousel-indicators vertical-right" style="--indicator-interval: 5000ms;">
+        <button *ngFor="let s of heroSlides; let i = index"
+                class="indicator"
+                type="button"
+                data-bs-target="#heroCarousel"
+                [attr.data-bs-slide-to]="i"
+                [class.active]="i===0"
+                [attr.aria-current]="i===0 ? 'true': null"
+                [attr.aria-label]="'Slide ' + (i+1)">
+          <span class="indicator-progress">
+            <span class="indicator-progress-bar"></span>
+          </span>
+        </button>
+      </div>
+  
+      <div class="carousel-inner rounded-0">
+        <div *ngFor="let s of heroSlides; let i = index" class="carousel-item" [class.active]="i===0">
+          <img [src]="s.img" class="d-block w-100 hero-img" [alt]="s.title">
+          <div class="carousel-caption text-start">
+            <div class="badge bg-danger mb-2" *ngIf="s.tag">{{ s.tag }}</div>
+            <h1 class="display-5 fw-bold">{{ s.title }}</h1>
+            <p class="lead text-white-75">{{ s.subtitle }}</p>
+            <div class="d-flex gap-2">
+              <a class="btn btn-primary btn-lg">Watch Now</a>
+              <a class="btn btn-outline-light btn-lg">More Info</a>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span><span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </section>
+  
+  <!-- ===================== CONTENT ===================== -->
+  <main class="container-fluid px-3 px-md-4 py-4">
+  
+    <!-- Rail: Continue Watching (landscape) -->
+    <div class="rail d-flex align-items-center mb-2">
+      <h2 class="section-title flex-grow-1">Continue Watching</h2>
+      <div class="btn-group d-none d-md-inline-flex" role="group" aria-label="controls">
+        <button class="btn btn-outline-light btn-sm" data-bs-target="#cwCarousel" data-bs-slide="prev">‹</button>
+        <button class="btn btn-outline-light btn-sm" data-bs-target="#cwCarousel" data-bs-slide="next">›</button>
+      </div>
+    </div>
+    <div id="cwCarousel" class="carousel slide" data-bs-interval="0">
+      <div class="carousel-inner">
+        <div *ngFor="let chunked of chunk(continueWatching, 6); let i = index" class="carousel-item" [class.active]="i===0">
+          <div class="row row-cols-2 row-cols-sm-3 row-cols-md-3 row-cols-lg-6 g-3">
+            <div class="col" *ngFor="let item of chunked">
+              <div class="card h-100 bg-dark text-white border-0 shadow-sm show-card">
+                <img [src]="item.img" class="card-img-top" [alt]="item.title">
+                <div class="progress progress-thin">
+                  <div class="progress-bar" role="progressbar" style="width: 45%"></div>
+                </div>
+                <div class="card-img-overlay d-flex flex-column justify-content-end gradient-overlay p-2">
+                  <div class="small text-white-50">{{ item.subtitle }}</div>
+                  <h6 class="mb-0 fw-semibold">{{ item.title }}</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   
-    <!-- Carousels -->
-    <div class="px-6 mt-10 space-y-12">
-      <!-- Trending Now -->
-      <div>
-        <h2 class="text-2xl font-semibold mb-4">Trending Now</h2>
-        <p-carousel [value]="trending" [numVisible]="6" [numScroll]="6"
-                    [circular]="true" [responsiveOptions]="responsiveOptions">
-          <ng-template pTemplate="item" let-movie>
-            <div class="movie-card cursor-pointer">
-              <img [src]="movie.image" alt="{{ movie.title }}"
-                   class="rounded-lg shadow-lg hover:scale-105 transition-transform"/>
-              <div class="mt-2 text-sm text-center">{{ movie.title }}</div>
-            </div>
-          </ng-template>
-        </p-carousel>
-      </div>
-  
-      <!-- Top Picks -->
-      <div>
-        <h2 class="text-2xl font-semibold mb-4">Top Picks For You</h2>
-        <p-carousel [value]="topPicks" [numVisible]="6" [numScroll]="6"
-                    [circular]="true" [responsiveOptions]="responsiveOptions">
-          <ng-template pTemplate="item" let-movie>
-            <div class="movie-card cursor-pointer">
-              <img [src]="movie.image" alt="{{ movie.title }}"
-                   class="rounded-lg shadow-lg hover:scale-105 transition-transform"/>
-              <div class="mt-2 text-sm text-center">{{ movie.title }}</div>
-            </div>
-          </ng-template>
-        </p-carousel>
+    <!-- Rail: Trending Now (landscape) -->
+    <div class="rail d-flex align-items-center mt-4 mb-2">
+      <h2 class="section-title flex-grow-1">Trending Now</h2>
+      <div class="btn-group d-none d-md-inline-flex" role="group" aria-label="controls">
+        <button class="btn btn-outline-light btn-sm" data-bs-target="#trendingCarousel" data-bs-slide="prev">‹</button>
+        <button class="btn btn-outline-light btn-sm" data-bs-target="#trendingCarousel" data-bs-slide="next">›</button>
       </div>
     </div>
-  </div>
+    <div id="trendingCarousel" class="carousel slide" data-bs-interval="0">
+      <div class="carousel-inner">
+        <div *ngFor="let chunked of chunk(trendingNow, 6); let i = index" class="carousel-item" [class.active]="i===0">
+          <div class="row row-cols-2 row-cols-sm-3 row-cols-md-3 row-cols-lg-6 g-3">
+            <div class="col" *ngFor="let item of chunked">
+              <div class="card h-100 bg-dark text-white border-0 shadow-sm show-card">
+                <img [src]="item.img" class="card-img-top" [alt]="item.title">
+                <div class="card-img-overlay d-flex flex-column justify-content-end gradient-overlay p-2">
+                  <div class="badge bg-primary align-self-start" *ngIf="item.tag">{{ item.tag }}</div>
+                  <h6 class="mb-0 fw-semibold">{{ item.title }}</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- News (cards) -->
+    <h2 class="section-title mt-4">Featured News</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+      <div class="col" *ngFor="let item of featuredNews">
+        <div class="card h-100 bg-dark text-white border-0 shadow-sm">
+          <img [src]="item.img" class="card-img-top" [alt]="item.title">
+          <div class="card-body">
+            <h5 class="card-title">{{ item.title }}</h5>
+            <p class="card-text text-white-50">{{ item.subtitle }}</p>
+            <a class="btn btn-outline-light btn-sm">Read</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="bg-black text-white-50 mt-auto">
+    <div class="container-fluid px-3 px-md-4 py-5">
+      <div class="row g-4">
+        <div class="col-12 col-md-3">
+          <div class="fs-4 fw-bold text-white mb-2"><span class="text-primary">Stream</span>Hub</div>
+          <p class="small">Entertainment, news & sports — all in one place.</p>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="fw-semibold text-white mb-2">Browse</div>
+          <ul class="list-unstyled small">
+            <li><a class="link-light link-opacity-75" href="#">Shows</a></li>
+            <li><a class="link-light link-opacity-75" href="#">Live TV</a></li>
+            <li><a class="link-light link-opacity-75" href="#">News</a></li>
+            <li><a class="link-light link-opacity-75" href="#">Sports</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="fw-semibold text-white mb-2">Company</div>
+          <ul class="list-unstyled small">
+            <li><a class="link-light link-opacity-75" href="#">About</a></li>
+            <li><a class="link-light link-opacity-75" href="#">Careers</a></li>
+            <li><a class="link-light link-opacity-75" href="#">Press</a></li>
+            <li><a class="link-light link-opacity-75" href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="fw-semibold text-white mb-2">Get the App</div>
+          <div class="d-flex gap-2">
+            <a class="btn btn-outline-light btn-sm">App Store</a>
+            <a class="btn btn-outline-light btn-sm">Google Play</a>
+          </div>
+        </div>
+      </div>
+      <hr class="border-secondary my-4" />
+      <div class="d-flex flex-column flex-md-row gap-2 justify-content-between small">
+        <div>©  StreamHub</div>
+        <div class="d-flex gap-3">
+          <a class="link-light link-opacity-75" href="#">Terms</a>
+          <a class="link-light link-opacity-75" href="#">Privacy</a>
+          <a class="link-light link-opacity-75" href="#">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>

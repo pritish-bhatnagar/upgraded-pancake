@@ -1,5 +1,5 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { StepperOrientation } from '@angular/material/stepper';
 // import { AuthService } from 'src/app/auth.service';
@@ -15,6 +15,7 @@ import { auth, googleProvider } from 'src/app/firebase/firebase-config'
 })
 export class FirebaseComponent {
   // constructor(private auth: Auth) {}
+  @Input() showNavbar = true;
   isLogin = false;
   user: any = null;
   // email: string;
