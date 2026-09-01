@@ -1,0 +1,128 @@
+<div class="guide-backdrop" [class.open]="open" [class.as-page]="isPage" (click)="onBackdropClick()">
+  <section class="guide-panel"
+           (click)="$event.stopPropagation()"
+           [attr.role]="isPage ? 'region' : 'dialog'"
+           aria-label="Live channels">
+
+    <header class="guide-head">
+      <button type="button" class="guide-back" *ngIf="isPage" aria-label="Back" (click)="close()">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <div class="guide-title">
+        <span class="live-dot"></span>
+        <h2>Live now</h2>
+        <span class="guide-count" *ngIf="!loading">{{ liveCount }} on air</span>
+      </div>
+      <button type="button" class="guide-close" *ngIf="!isPage" aria-label="Close" (click)="close()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+
+    <div class="guide-search">
+      <i class="bi bi-search"></i>
+      <input #searchBox
+             type="search"
+             class="guide-input"
+             placeholder="Search live channels — news, sports, NASA…"
+             aria-label="Search live channels"
+             [value]="query"
+             (input)="onQuery($any($event.target).value)">
+      <button type="button" class="guide-clear" *ngIf="query" (click)="onQuery('')" aria-label="Clear">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+
+    <div class="guide-filters">
+      <button type="button" class="chip" [class.active]="!category" (click)="pickCategory(null)">All</button>
+      <button type="button" class="chip"
+              *ngFor="let c of categories"
+              [class.active]="category === c"
+              (click)="pickCategory(c)">{{ c }}</button>
+      <button type="button" class="chip toggle" [class.active]="liveOnly" (click)="toggleLiveOnly()">
+        <span class="live-dot sm"></span> Live only
+      </button>
+    </div>
+
+    <div class="guide-filters languages" *ngIf="languages.length > 1">
+      <span class="filter-label">Language</span>
+      <button type="button" class="chip sm" [class.active]="!language" (click)="pickLanguage(null)">Any</button>
+      <button type="button" class="chip sm"
+              *ngFor="let l of languages"
+              [class.active]="language === l"
+              (click)="pickLanguage(l)">{{ languageLabel(l) }}</button>
+    </div>
+
+    <div class="guide-body">
+      <p class="guide-state" *ngIf="loading">Checking what's on air…</p>
+      <p class="guide-state" *ngIf="!loading && failed">Couldn't reach the channel guide. Try again in a moment.</p>
+      <p class="guide-state" *ngIf="!loading && !failed && !channels.length">
+        No channels match<ng-container *ngIf="query"> “{{ query }}”</ng-container>.
+      </p>
+
+      <div class="channel-grid" *ngIf="!loading && !failed && channels.length">
+        <button type="button"
+                class="channel"
+                *ngFor="let channel of channels; trackBy: trackByChannel"
+                [class.off-air]="!channel.isLive"
+                [disabled]="!channel.isLive"
+                (click)="watch(channel)">
+
+          <span class="channel-logo">
+            <img *ngIf="channel.logoUrl; else initialsTile"
+                 [src]="channel.logoUrl" [alt]="channel.name" loading="lazy">
+            <ng-template #initialsTile><span class="initials">{{ initials(channel) }}</span></ng-template>
+            <span class="badge-live" *ngIf="channel.isLive"><span class="live-dot sm"></span> LIVE</span>
+            <span class="badge-off" *ngIf="!channel.isLive">OFF AIR</span>
+            <span class="channel-go" *ngIf="channel.isLive"><i class="bi bi-play-fill"></i></span>
+          </span>
+
+          <span class="channel-copy">
+            <span class="channel-name">
+              {{ channel.name }}
+              <span class="badge-creator" *ngIf="channel.source === 'studio'">CREATOR</span>
+            </span>
+            <!-- Roughly half the lineup has no guide source, so the static
+                 description stays as the fallback rather than leaving a gap. -->
+            <span class="channel-now" *ngIf="channel.nowPlaying; else channelDesc">
+              <i class="bi bi-broadcast-pin"></i>{{ channel.nowPlaying.title }}
+            </span>
+            <ng-template #channelDesc>
+              <span class="channel-desc">{{ channel.description }}</span>
+            </ng-template>
+            <span class="channel-tags">
+              {{ channel.category }} · {{ languageLabel(channel.language) }}<ng-container
+                *ngIf="channel.isLive && channel.viewers !== null"> · {{ channel.viewers }} watching</ng-container>
+            </span>
+          </span>
+        </button>
+      </div>
+
+      <nav class="guide-pager" *ngIf="!loading && !failed && pageCount > 1" aria-label="Channel pages">
+        <button type="button" class="pager-step" [disabled]="page === 1"
+                (click)="goToPage(page - 1)" aria-label="Previous page">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <button type="button" class="pager-num" *ngIf="!pageWindow.includes(1)" (click)="goToPage(1)">1</button>
+        <span class="pager-gap" *ngIf="!pageWindow.includes(1)">…</span>
+
+        <button type="button" class="pager-num"
+                *ngFor="let p of pageWindow"
+                [class.active]="p === page"
+                [attr.aria-current]="p === page ? 'page' : null"
+                (click)="goToPage(p)">{{ p }}</button>
+
+        <span class="pager-gap" *ngIf="!pageWindow.includes(pageCount)">…</span>
+        <button type="button" class="pager-num" *ngIf="!pageWindow.includes(pageCount)"
+                (click)="goToPage(pageCount)">{{ pageCount }}</button>
+
+        <button type="button" class="pager-step" [disabled]="page === pageCount"
+                (click)="goToPage(page + 1)" aria-label="Next page">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+
+        <span class="pager-summary">{{ totalCount }} channels</span>
+      </nav>
+    </div>
+  </section>
+</div>

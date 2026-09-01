@@ -1,0 +1,66 @@
+<div class="studio-page">
+  <header class="studio-head">
+    <button type="button" class="btn-back" (click)="back()" aria-label="Back to Studio">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <div>
+      <h1>Streaming requests</h1>
+      <p class="sub">Approve a channel to mint its stream key.</p>
+    </div>
+  </header>
+
+  <div *ngIf="denied" class="studio-empty error">
+    <i class="bi bi-shield-lock"></i>
+    <h2>Admins only</h2>
+    <p>This page is restricted to accounts with the admin role.</p>
+  </div>
+
+  <ng-container *ngIf="!denied">
+    <div class="filter-chips">
+      <button type="button" *ngFor="let f of filters"
+              class="chip" [class.active]="filter === f.key" (click)="setFilter(f.key)">
+        {{ f.label }}
+      </button>
+    </div>
+
+    <div *ngIf="loading" class="studio-empty">Loading…</div>
+
+    <div *ngIf="!loading && !channels.length" class="studio-empty">
+      <i class="bi bi-inbox"></i>
+      <p>Nothing {{ filter }}.</p>
+    </div>
+
+    <div class="request-list" *ngIf="!loading && channels.length">
+      <div class="request-row" *ngFor="let c of channels; trackBy: trackById">
+        <div class="channel-logo sm">
+          <img *ngIf="c.logoUrl" [src]="c.logoUrl" [alt]="c.name">
+          <span *ngIf="!c.logoUrl">{{ c.name.charAt(0).toUpperCase() }}</span>
+        </div>
+
+        <div class="request-meta">
+          <h3>{{ c.name }} <span class="handle">&#64;{{ c.handle }}</span></h3>
+          <p class="desc">{{ c.description || 'No description given.' }}</p>
+          <p class="muted">
+            {{ c.category }} · owner {{ c.ownerUid }}
+            <ng-container *ngIf="c.requestedAt"> · requested {{ c.requestedAt | date:'short' }}</ng-container>
+          </p>
+          <p class="muted" *ngIf="c.rejectionReason">Reason: {{ c.rejectionReason }}</p>
+        </div>
+
+        <div class="request-actions">
+          <button type="button" class="btn-primary"
+                  *ngIf="c.streamingStatus === 'pending' || c.streamingStatus === 'suspended'"
+                  (click)="approve(c)" [disabled]="busyId === c.id">Approve</button>
+
+          <button type="button" class="btn-ghost"
+                  *ngIf="c.streamingStatus === 'pending'"
+                  (click)="reject(c)" [disabled]="busyId === c.id">Reject</button>
+
+          <button type="button" class="btn-danger"
+                  *ngIf="c.streamingStatus === 'approved'"
+                  (click)="suspend(c)" [disabled]="busyId === c.id">Suspend</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

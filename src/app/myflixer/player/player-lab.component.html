@@ -1,0 +1,50 @@
+<div class="lab">
+  <header class="lab-head">
+    <h1>Player lab</h1>
+    <p>Custom MyFlixer player — hover for controls, <kbd>space</kbd>/<kbd>k</kbd> play, <kbd>←</kbd><kbd>→</kbd> 5s,
+      <kbd>j</kbd>/<kbd>l</kbd> 10s, <kbd>↑</kbd><kbd>↓</kbd> volume, <kbd>m</kbd> mute, <kbd>f</kbd> fullscreen,
+      <kbd>p</kbd> PiP, <kbd>0</kbd>–<kbd>9</kbd> jump. Click the player once so it takes keyboard focus.</p>
+  </header>
+
+  <div class="lab-player">
+    <app-video-player
+      [src]="activeSrc"
+      [kind]="activeKind"
+      [live]="activeLive"
+      [poster]="activePoster"
+      [title]="customUrl ? 'Custom source' : selected.name"
+      [subtitle]="customUrl ? customUrl : selected.note"
+      (progress)="onProgress($event)"
+      (ended)="onEnded()"
+      (back)="goBack()"></app-video-player>
+  </div>
+
+  <section class="lab-sources">
+    <h2>Sources</h2>
+    <div class="lab-chips">
+      <button type="button"
+              *ngFor="let s of samples"
+              class="lab-chip"
+              [class.active]="!customUrl && selected === s"
+              (click)="pick(s)">{{ s.name }}</button>
+    </div>
+
+    <label class="lab-field">
+      <span>Or paste any .m3u8 / .mp4 URL</span>
+      <input type="url"
+             placeholder="https://example.com/stream.m3u8"
+             [value]="customUrl"
+             (change)="onCustomUrl($any($event.target).value)">
+    </label>
+
+    <label class="lab-check">
+      <input type="checkbox" [checked]="liveMode" (change)="liveMode = $any($event.target).checked">
+      <span>Treat as live (LIVE badge, seekable-window timeline, GO LIVE button)</span>
+    </label>
+  </section>
+
+  <section class="lab-log" *ngIf="log.length">
+    <h2>Events</h2>
+    <div class="lab-log-line" *ngFor="let line of log">{{ line }}</div>
+  </section>
+</div>

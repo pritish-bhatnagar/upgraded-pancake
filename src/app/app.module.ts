@@ -20,7 +20,6 @@ import { TwitterComponent } from './twitter/twitter.component';
 import { FirebaseComponent } from './firebase/firebase.component';
 import { FirebaseUiComponent } from './firebase-ui/firebase-ui.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MessagesComponent } from './messages/messages.component';
 import {MatButtonModule} from '@angular/material/button';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {StepperOrientation, MatStepperModule} from '@angular/material/stepper';
@@ -39,8 +38,6 @@ import { HogsmeadeComponent } from './hogsmeade/hogsmeade.component';
 import { MatSelectModule } from '@angular/material/select';
 import { DarcyComponent } from './darcy/darcy.component';
 import { Soap2dayComponent } from './soap2day/soap2day.component';
-import { TvNetworkModule } from './tv-network/tv-network.module';
-// import { TvNetworkComponent } from './tv-network 1/tv-network.component';
 // import { CarouselModule } from 'primeng';
 // import { ButtonModule } from 'primeng/button';
 
@@ -57,6 +54,20 @@ import player from 'lottie-web';
 import { StarryBackgroundComponent } from './starry-background/starry-background.component';
 import { MyflixerComponent } from './myflixer/myflixer.component';
 import { SafePipe } from './myflixer/safe.pipe';
+import { MyflixerLoginComponent } from './myflixer/auth/login/login.component';
+import { MyflixerSignupComponent } from './myflixer/auth/signup/signup.component';
+import { MyflixerProfileComponent } from './myflixer/profile/profile.component';
+import { MyflixerWhoComponent } from './myflixer/who/who.component';
+import { MyflixerManageProfilesComponent } from './myflixer/manage-profiles/manage-profiles.component';
+import { VideoPlayerComponent } from './myflixer/player/video-player.component';
+import { MyflixerPlayerLabComponent } from './myflixer/player/player-lab.component';
+import { MyflixerWatchComponent } from './myflixer/watch/watch.component';
+import { MyflixerLiveChannelComponent } from './myflixer/live/live-channel.component';
+import { LiveGuideComponent } from './myflixer/live/live-guide.component';
+import { MyflixerLiveGuidePageComponent } from './myflixer/live/live-guide-page.component';
+import { StudioChannelsComponent } from './myflixer/studio/studio-channels.component';
+import { StudioDashboardComponent } from './myflixer/studio/studio-dashboard.component';
+import { StudioRequestsComponent } from './myflixer/studio/studio-requests.component';
 // import { ButtonModule } from 'primeng/button';
 export function playerFactory() {
   return player;
@@ -80,7 +91,6 @@ export function playerFactory() {
     TwitterComponent,
     FirebaseComponent,
     FirebaseUiComponent,
-    MessagesComponent,
     ExploreComponent,
     BottomsheetComponent,
     NasaComponent,
@@ -90,8 +100,22 @@ export function playerFactory() {
     HogsmeadeComponent,
     DarcyComponent,
     StarryBackgroundComponent,
-    MyflixerComponent
-    
+    MyflixerComponent,
+    MyflixerLoginComponent,
+    MyflixerSignupComponent,
+    MyflixerProfileComponent,
+    MyflixerWhoComponent,
+    MyflixerManageProfilesComponent,
+    VideoPlayerComponent,
+    MyflixerPlayerLabComponent,
+    MyflixerWatchComponent,
+    MyflixerLiveChannelComponent,
+    LiveGuideComponent,
+    StudioChannelsComponent,
+    StudioDashboardComponent,
+    StudioRequestsComponent,
+    MyflixerLiveGuidePageComponent
+
     // TvNetworkComponent
   ],
   imports: [

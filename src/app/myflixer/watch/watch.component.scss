@@ -1,0 +1,97 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Watch page — the player owns the whole viewport, nothing else on screen.
+   ───────────────────────────────────────────────────────────────────────────*/
+
+:host {
+  display: block;
+  background: #000;
+  color: #fff;
+}
+
+.watch {
+  position: relative;
+  width: 100%;
+  /* svh, not vh: on mobile the URL bar must not push the player off-screen. */
+  height: 100svh;
+  background: #000;
+  overflow: hidden;
+}
+
+/* The player defaults to a 16:9 box for in-page embedding (the lab); here it
+   fills the viewport and letterboxes itself via the video's object-fit. */
+app-video-player {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.watch-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  padding: 1.5rem;
+  text-align: center;
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    color: rgba(255, 255, 255, .65);
+    font-size: .95rem;
+  }
+}
+
+.watch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .6rem;
+  margin-top: .5rem;
+}
+
+.btn-primary-flat,
+.btn-ghost {
+  padding: .55rem 1.25rem;
+  border-radius: 4px;
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+
+.btn-primary-flat {
+  border: 0;
+  background: #e50914;
+  color: #fff;
+
+  &:hover { background: #f6121d; }
+}
+
+.btn-ghost {
+  border: 1px solid rgba(255, 255, 255, .35);
+  background: transparent;
+  color: #fff;
+
+  &:hover { border-color: #fff; background: rgba(255, 255, 255, .08); }
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, .18);
+  border-top-color: #e50914;
+  animation: watch-spin .8s linear infinite;
+}
+
+@keyframes watch-spin {
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,166 @@
+<div class="studio-page">
+  <header class="studio-head">
+    <button type="button" class="btn-back" (click)="back()" aria-label="Back to Studio">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <div class="head-logo" *ngIf="channel" [class.empty]="!channel.logoUrl">
+      <img *ngIf="channel.logoUrl" [src]="channel.logoUrl" [alt]="channel.name">
+      <span *ngIf="!channel.logoUrl">{{ channel.name.charAt(0).toUpperCase() }}</span>
+    </div>
+    <div *ngIf="channel">
+      <h1>{{ channel.name }}</h1>
+      <p class="sub">&#64;{{ channel.handle }} · {{ channel.category }}</p>
+      <div class="logo-actions inline">
+        <input #logoInput type="file" accept="image/*" hidden (change)="pickLogo($event)">
+        <button type="button" class="btn-link" (click)="startEdit()" *ngIf="!editing">Edit details</button>
+        <button type="button" class="btn-link" (click)="logoInput.click()" [disabled]="uploadingLogo">
+          {{ uploadingLogo ? 'Saving…' : (channel.logoUrl ? 'Change logo' : 'Add logo') }}
+        </button>
+        <button type="button" class="btn-link" *ngIf="channel.logoUrl && !uploadingLogo" (click)="removeLogo()">
+          Remove
+        </button>
+      </div>
+      <p class="form-error" *ngIf="logoError">{{ logoError }}</p>
+    </div>
+  </header>
+
+  <!-- Edit channel details. The handle is not editable: it is the stream
+       address, so changing it would break OBS and any shared link. -->
+  <form class="studio-card create-form" *ngIf="editing && channel" (ngSubmit)="saveDetails()">
+    <h2>Edit channel</h2>
+
+    <label>
+      <span>Channel name</span>
+      <input type="text" name="editName" [(ngModel)]="edit.name" maxlength="60" required>
+    </label>
+
+    <label>
+      <span>Category</span>
+      <select name="editCategory" [(ngModel)]="edit.category">
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+    </label>
+
+    <label>
+      <span>Description</span>
+      <textarea name="editDescription" [(ngModel)]="edit.description" rows="3" maxlength="300"></textarea>
+    </label>
+
+    <p class="hint-muted">Handle &#64;{{ channel.handle }} is permanent — it's your stream address.</p>
+    <p class="form-error" *ngIf="detailsError">{{ detailsError }}</p>
+
+    <div class="form-actions">
+      <button type="button" class="btn-ghost" (click)="cancelEdit()" [disabled]="savingDetails">Cancel</button>
+      <button type="submit" class="btn-primary" [disabled]="savingDetails || !edit.name.trim()">
+        {{ savingDetails ? 'Saving…' : 'Save changes' }}
+      </button>
+    </div>
+  </form>
+
+  <div *ngIf="loading" class="studio-empty">Loading…</div>
+  <div *ngIf="error && !channel" class="studio-empty error">{{ error }}</div>
+
+  <ng-container *ngIf="channel && !loading">
+
+    <!-- ── On-air strip: only meaningful once approved ─────────────────────── -->
+    <div class="live-strip" *ngIf="channel.canBroadcast" [class.is-live]="status?.isLive">
+      <div class="live-badge">
+        <span class="dot"></span>{{ status?.isLive ? 'LIVE' : 'OFF AIR' }}
+      </div>
+      <ng-container *ngIf="status?.isLive">
+        <div class="stat"><span class="k">Viewers</span><span class="v">{{ status?.viewers }}</span></div>
+        <div class="stat"><span class="k">Uptime</span><span class="v">{{ uptimeLabel }}</span></div>
+        <div class="stat"><span class="k">Quality</span><span class="v">{{ status?.resolution || '—' }}</span></div>
+        <button type="button" class="btn-primary ms-auto" (click)="watchLive()">
+          <i class="bi bi-play-fill me-1"></i>Watch
+        </button>
+      </ng-container>
+      <p class="hint" *ngIf="!status?.isLive">
+        Start streaming in OBS and this will switch to LIVE within a few seconds.
+      </p>
+    </div>
+
+    <!-- ── Permission states ──────────────────────────────────────────────── -->
+    <div class="studio-card notice" *ngIf="channel.streamingStatus === 'none'">
+      <h2><i class="bi bi-shield-lock me-2"></i>Streaming access required</h2>
+      <p>Your channel exists, but going live needs approval. Request it and an admin will review your channel.</p>
+      <button type="button" class="btn-primary" (click)="requestAccess()" [disabled]="busy">
+        {{ busy ? 'Submitting…' : 'Request streaming access' }}
+      </button>
+    </div>
+
+    <div class="studio-card notice pending" *ngIf="channel.streamingStatus === 'pending'">
+      <h2><i class="bi bi-hourglass-split me-2"></i>Awaiting review</h2>
+      <p>Your request was submitted. You'll get a stream key here once it's approved.</p>
+    </div>
+
+    <div class="studio-card notice rejected" *ngIf="channel.streamingStatus === 'rejected'">
+      <h2><i class="bi bi-x-octagon me-2"></i>Not approved</h2>
+      <p *ngIf="channel.rejectionReason">Reason: {{ channel.rejectionReason }}</p>
+      <button type="button" class="btn-primary" (click)="requestAccess()" [disabled]="busy">Request again</button>
+    </div>
+
+    <div class="studio-card notice rejected" *ngIf="channel.streamingStatus === 'suspended'">
+      <h2><i class="bi bi-slash-circle me-2"></i>Suspended</h2>
+      <p>An admin suspended broadcasting on this channel and your stream key has been revoked.</p>
+      <p *ngIf="channel.rejectionReason">Reason: {{ channel.rejectionReason }}</p>
+    </div>
+
+    <!-- ── Stream setup ───────────────────────────────────────────────────── -->
+    <div class="studio-card" *ngIf="channel.canBroadcast && ingest">
+      <h2>Stream setup</h2>
+      <p class="card-sub">In OBS, open <strong>Settings → Stream</strong>, choose service <strong>Custom…</strong>, then paste these two values.</p>
+
+      <label class="field">
+        <span>Server</span>
+        <div class="copy-row">
+          <input type="text" [value]="ingest.server" readonly>
+          <button type="button" (click)="copy(ingest.server, 'server')">
+            <i class="bi" [class.bi-clipboard]="copied !== 'server'" [class.bi-check-lg]="copied === 'server'"></i>
+          </button>
+        </div>
+      </label>
+
+      <label class="field">
+        <span>Stream key</span>
+        <div class="copy-row">
+          <input type="text" [value]="maskedKey" readonly>
+          <button type="button" (click)="keyRevealed = !keyRevealed" [attr.aria-label]="keyRevealed ? 'Hide key' : 'Show key'">
+            <i class="bi" [class.bi-eye]="!keyRevealed" [class.bi-eye-slash]="keyRevealed"></i>
+          </button>
+          <button type="button" (click)="copy(ingest.streamKey, 'key')">
+            <i class="bi" [class.bi-clipboard]="copied !== 'key'" [class.bi-check-lg]="copied === 'key'"></i>
+          </button>
+        </div>
+        <small>Treat this like a password — anyone holding it can broadcast as you.</small>
+      </label>
+
+      <p class="copy-failed" *ngIf="copyFailed">
+        Couldn't reach the clipboard — select the text in the box and copy it manually.
+      </p>
+
+      <div class="setup-tips">
+        <h3>Recommended encoder settings</h3>
+        <ul>
+          <li>Output resolution <strong>1280×720</strong> at <strong>30fps</strong></li>
+          <li>Bitrate <strong>2500 kbps</strong>, keyframe interval <strong>2s</strong></li>
+          <li>Encoder <strong>x264</strong>, preset <code>veryfast</code></li>
+        </ul>
+        <p class="muted">Streams are passed through without re-encoding, so viewers receive exactly what you send.</p>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="btn-ghost" (click)="rotateKey()" [disabled]="busy">
+          <i class="bi bi-arrow-repeat me-2"></i>Reset stream key
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Danger zone ────────────────────────────────────────────────────── -->
+    <div class="studio-card danger-zone">
+      <h2>Delete channel</h2>
+      <p>Removes the channel and frees <strong>&#64;{{ channel.handle }}</strong> for anyone else to claim.</p>
+      <button type="button" class="btn-danger" (click)="deleteChannel()" [disabled]="busy">Delete channel</button>
+    </div>
+  </ng-container>
+</div>

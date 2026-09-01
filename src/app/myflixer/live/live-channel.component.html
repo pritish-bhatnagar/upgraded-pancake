@@ -1,0 +1,40 @@
+<div class="live-page">
+  <div class="live-state" *ngIf="loading">
+    <div class="spinner" aria-hidden="true"></div>
+    <p>Tuning in…</p>
+  </div>
+
+  <div class="live-state" *ngIf="!loading && !playback">
+    <h1>{{ errorTitle }}</h1>
+    <p>{{ errorMessage }}</p>
+    <div class="live-actions">
+      <button type="button" class="btn-primary-flat" (click)="openGuide()">Browse channels</button>
+      <button type="button" class="btn-ghost" (click)="retry()">Try again</button>
+      <button type="button" class="btn-ghost" (click)="exit()">Back to browse</button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="playback">
+    <app-video-player
+      [src]="playback.streamUrl"
+      [kind]="playback.kind"
+      [title]="playback.name"
+      [subtitle]="playback.nowPlaying ? playback.nowPlaying.title + ' · Live' : playback.category + ' · Live'"
+      [live]="true"
+      [lowLatency]="playback.source === 'studio'"
+      [autoplay]="true"
+      [canShare]="true"
+      [forceLandscape]="true"
+      (streamEnded)="onStreamEnded()"
+      (stalled)="onStalled()"
+      (share)="shareChannel()"
+      (back)="openGuide()"></app-video-player>
+
+    <div class="share-toast" *ngIf="shareNote">{{ shareNote }}</div>
+
+    <!-- Channel hopping without leaving the player -->
+    <button type="button" class="channels-btn" (click)="openGuide()">
+      <i class="bi bi-grid-3x3-gap-fill me-1"></i>Channels
+    </button>
+  </ng-container>
+</div>

@@ -181,6 +181,88 @@ animation: logoDotFade 1.5s ease-in-out infinite;
 /* “Try+” button always visible */
 .try-btn { white-space: nowrap; }
 
+/* Nav account dropdown (Netflix-style) */
+.nav-account { display: inline-flex; }
+.nav-avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.nav-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.nav-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #333;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.nav-caret {
+  color: #fff;
+  font-size: 0.7rem;
+  transition: transform 0.2s ease;
+}
+.nav-account.show .nav-caret,
+.nav-avatar-btn[aria-expanded="true"] .nav-caret { transform: rotate(180deg); }
+
+.nav-account-menu {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  min-width: 240px;
+  padding: 8px 0;
+  margin-top: 10px;
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 8px 16px;
+    font-size: 0.9rem;
+
+    &:hover, &:focus {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+  }
+
+  .dropdown-divider { border-top-color: rgba(255, 255, 255, 0.12); }
+
+  .current-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px 12px;
+  }
+  .current-name { color: #fff; font-weight: 600; font-size: 0.95rem; }
+}
+
+.mini-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
 /* Toggler on left look nice */
 .navbar-toggler { border: none; }
 
@@ -262,28 +344,6 @@ animation: logoDotFade 1.5s ease-in-out infinite;
 .section-title {
   margin: .25rem 0 .5rem;
 }
-.show-card img {
-  aspect-ratio: 16/9;
-  object-fit: cover;
-}
-.poster-card .poster-img {
-  aspect-ratio: 2/3; /* portrait */
-  object-fit: cover;
-  border-radius: .5rem;
-}
-.gradient-overlay {
-  background: linear-gradient(to top, rgba(0,0,0,.65), rgba(0,0,0,0) 60%);
-}
-
-/* Thin progress bar for continue watching */
-.progress-thin {
-  height: 4px;
-  background-color: rgba(255,255,255,.08);
-  border-radius: 0;
-}
-.progress-thin .progress-bar {
-  background-color: #0d6efd;
-}
 
 /* Offcanvas polish */
 .offcanvas .list-group-item {
@@ -326,4 +386,864 @@ footer a:hover { text-decoration: underline; }
     from { width: 0%; }
     to   { width: 100%; }
   }
+}
+/* ═══════════════════════ MOBILE RESPONSIVE ═══════════════════════ */
+
+/* The page itself must never scroll sideways. The fixed header isn't clipped
+   by this (no transform on :host), so the account dropdown still escapes. */
+:host { overflow-x: hidden; }
+
+/* ── Navbar ────────────────────────────────────────────────────── */
+@media (max-width: 991.98px) {
+  /* The offcanvas carries its own Try+ / search, so drop the duplicates
+     from the cramped top row rather than letting them overflow. */
+  .try-btn { display: none !important; }
+
+  .nav-top { padding-top: .3rem; padding-bottom: .3rem; }
+  .nav-top .container-fluid { padding-left: .6rem; padding-right: .6rem; }
+
+  .nav-top .navbar-brand.brand-centered { font-size: 1.05rem; }
+
+  .nav-actions .btn {
+    padding: .32rem .7rem;
+    font-size: .8rem;
+    white-space: nowrap;
+  }
+
+  /* Keep the account menu inside the viewport on narrow screens. */
+  .nav-account-menu {
+    min-width: 210px;
+    max-width: calc(100vw - 20px);
+  }
+}
+
+@media (max-width: 400px) {
+  .nav-top .navbar-brand.brand-centered { font-size: .95rem; }
+  .nav-actions { gap: .35rem !important; }
+  .nav-actions .btn { padding: .3rem .55rem; font-size: .75rem; }
+  .nav-avatar { width: 30px; height: 30px; }
+}
+
+/* Category rail: swipeable, left-aligned, no visible scrollbar. */
+@media (max-width: 991.98px) {
+  .category-nav {
+    justify-content: flex-start !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .category-nav::-webkit-scrollbar { display: none; }
+  .category-nav .nav-link {
+    white-space: nowrap;
+    font-size: .88rem;
+    padding: .35rem .7rem;
+  }
+}
+
+/* ── Hero ──────────────────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+  .hero-img { max-height: 62vh; min-height: 340px; }
+
+  .carousel-caption {
+    right: 6%;
+    left: 6%;
+    bottom: 15%;
+  }
+  .carousel-caption h1 { font-size: 1.5rem; }
+  .carousel-caption .lead {
+    font-size: .9rem;
+    /* Long synopses would otherwise push the buttons off-screen. */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .carousel-caption .btn-lg {
+    padding: .5rem 1.1rem;
+    font-size: .9rem;
+  }
+  .carousel-control-prev,
+  .carousel-control-next { width: 12%; }
+}
+
+@media (max-width: 575.98px) {
+  .hero-img { max-height: 56vh; min-height: 300px; }
+  .carousel-caption { bottom: 18%; }
+  .carousel-caption h1 { font-size: 1.25rem; }
+  .carousel-caption .d-flex { gap: .5rem !important; }
+}
+
+/* ── Content rails ─────────────────────────────────────────────── */
+/* The prev/next buttons are desktop-only (d-none d-md-inline-flex), which left
+   mobile with no way to reach later items. Turn each rail into a horizontally
+   swipeable, snapping strip so every chunk is reachable by touch. */
+@media (max-width: 767.98px) {
+  #cwCarousel .carousel-inner,
+  #trendingCarousel .carousel-inner {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  #cwCarousel .carousel-inner::-webkit-scrollbar,
+  #trendingCarousel .carousel-inner::-webkit-scrollbar { display: none; }
+
+  #cwCarousel .carousel-item,
+  #trendingCarousel .carousel-item {
+    display: block;
+    position: relative;
+    float: none;
+    width: 100%;
+    flex: 0 0 100%;
+    margin-right: 0;
+    opacity: 1;
+    transform: none;
+    transition: none;
+    scroll-snap-align: start;
+  }
+
+  .section-title { font-size: 1.15rem; }
+}
+
+/* ── Footer ────────────────────────────────────────────────────── */
+@media (max-width: 575.98px) {
+  footer .container-fluid { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+}
+
+/* ── Full-screen hero on mobile ─────────────────────────────────── */
+/* Netflix-style: the poster fills the phone screen and the caption sits over
+   its bottom edge. Overrides the max-height rules set further up. */
+@media (max-width: 767.98px) {
+  .hero-wrapper,
+  #heroCarousel,
+  #heroCarousel .carousel-inner,
+  #heroCarousel .carousel-item {
+    height: 100svh;          /* svh ignores mobile browser chrome */
+    min-height: 100svh;
+  }
+
+  .hero-img {
+    height: 100%;
+    max-height: none;
+    min-height: 0;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .trailer-container iframe { height: 100%; }
+
+  /* Caption sits above the bottom edge, clear of the indicators. */
+  .carousel-caption { bottom: 12%; }
+
+  /* Taller gradient so text stays readable over a full-bleed image. */
+  .hero-bottom-gradient { height: 55%; }
+}
+
+/* Older browsers without svh units */
+@supports not (height: 100svh) {
+  @media (max-width: 767.98px) {
+    .hero-wrapper,
+    #heroCarousel,
+    #heroCarousel .carousel-inner,
+    #heroCarousel .carousel-item {
+      height: 100vh;
+      min-height: 100vh;
+    }
+  }
+}
+
+/* ═══════════════ MOBILE CHROME: slim bar + bottom tabs ═══════════════ */
+
+@media (max-width: 991.98px) {
+  /* Logo sits left, avatar right — no centred brand, no hamburger. */
+  .nav-top .navbar-brand.brand-centered {
+    position: static;
+    transform: none;
+    margin-left: 0;
+    margin-right: auto;
+  }
+  .nav-top { padding-top: .45rem; padding-bottom: .45rem; }
+}
+
+/* ── Fixed bottom tab bar ─────────────────────────────────────────── */
+.mobile-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1040;
+  display: flex;
+  background: rgba(10, 10, 10, .96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  padding-bottom: env(safe-area-inset-bottom);   /* clear the iOS home bar */
+
+  .tab {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 8px 0 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    color: rgba(255, 255, 255, .55);
+    font-size: .68rem;
+    transition: color .18s ease;
+
+    i { font-size: 1.15rem; }
+
+    &.active { color: #fff; }
+    &:active { color: #fff; }
+  }
+
+  /* Live reads as on-air at a glance — it's the one tab that leaves the page. */
+  .tab-live i { color: #e50914; }
+  .tab-live:active { color: #fff; }
+}
+
+/* Bottom tabs overlay content — give the page room so nothing hides behind them. */
+@media (max-width: 991.98px) {
+  .home-main { padding-bottom: 84px; }
+  footer { padding-bottom: 68px; }
+}
+
+/* ── Shared overlay for the search + more sheets ──────────────────── */
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background: rgba(0, 0, 0, .6);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s ease, visibility .25s ease;
+
+  &.open {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* ── "More" bottom sheet ──────────────────────────────────────────── */
+.more-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 82vh;
+  overflow-y: auto;
+  background: #141414;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  padding: 10px 0 calc(18px + env(safe-area-inset-bottom));
+  transform: translateY(100%);
+  transition: transform .28s cubic-bezier(.32, .72, 0, 1);
+}
+.mobile-overlay.open .more-sheet { transform: translateY(0); }
+
+.sheet-grabber {
+  width: 38px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, .25);
+  margin: 4px auto 14px;
+}
+
+.sheet-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+.sheet-profile-name { color: #fff; font-weight: 600; }
+
+.sheet-section {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  &:last-child { border-bottom: none; }
+}
+
+.sheet-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, .85);
+  padding: 12px 20px;
+  font-size: .98rem;
+  text-decoration: none;
+
+  &:active { background: rgba(255, 255, 255, .06); }
+  &.danger { color: #ff6b6b; }
+}
+
+/* ── Search overlay ───────────────────────────────────────────────── */
+.search-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #141414;
+  padding: calc(12px + env(safe-area-inset-top)) 16px 20px;
+  transform: translateY(-100%);
+  transition: transform .28s cubic-bezier(.32, .72, 0, 1);
+}
+.mobile-overlay.open .search-panel { transform: translateY(0); }
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #2a2a2a;
+  border-radius: 6px;
+  padding: 10px 12px;
+
+  i { color: rgba(255, 255, 255, .5); }
+}
+.search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  &::placeholder { color: rgba(255, 255, 255, .45); }
+}
+.search-cancel {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, .7);
+  font-size: .9rem;
+}
+.search-hint {
+  color: rgba(255, 255, 255, .4);
+  font-size: .85rem;
+  margin: 14px 2px 0;
+}
+
+/* ═══════════════════════ MOTION / ANIMATIONS ═══════════════════════ */
+
+/* Posters fade in once decoded rather than popping in half-drawn. */
+.fade-img {
+  opacity: 0;
+  transition: opacity .5s ease;
+  &.is-loaded { opacity: 1; }
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes captionIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Cards rise in, lightly staggered across the row. */
+.rail-card {
+  animation: cardIn .45s ease both;
+}
+@for $i from 1 through 8 {
+  .rail-track > .rail-card:nth-child(#{$i}) { animation-delay: #{$i * .045}s; }
+}
+
+/* Hero copy fades up as each slide becomes active. */
+#heroCarousel .carousel-item.active .carousel-caption > * {
+  animation: captionIn .55s ease both;
+}
+#heroCarousel .carousel-item.active .carousel-caption > *:nth-child(1) { animation-delay: .10s; }
+#heroCarousel .carousel-item.active .carousel-caption > *:nth-child(2) { animation-delay: .18s; }
+#heroCarousel .carousel-item.active .carousel-caption > *:nth-child(3) { animation-delay: .26s; }
+#heroCarousel .carousel-item.active .carousel-caption > *:nth-child(4) { animation-delay: .34s; }
+
+/* Smooth out the interactive bits generally. */
+.category-nav .nav-link,
+.nav-actions .btn,
+.mobile-tabs .tab {
+  transition: color .2s ease, background-color .2s ease, opacity .2s ease;
+}
+
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .rail-card,
+  #heroCarousel .carousel-item.active .carousel-caption > *,
+  .avatar-menu {
+    animation: none !important;
+  }
+  .fade-img { transition: none; opacity: 1; }
+  .rail-card:hover { transform: none; }
+}
+
+/* ═══════════════ LOADING SHIMMER ═══════════════ */
+.skeleton { padding-top: 4px; }
+
+.sk-title,
+.sk-card {
+  background: linear-gradient(90deg, #1c1c1c 25%, #2a2a2a 37%, #1c1c1c 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.sk-title {
+  height: 20px;
+  width: 190px;
+  margin: 18px 0 14px;
+}
+
+.sk-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+}
+
+/* Matches the portrait poster the real rails render. */
+.sk-card { aspect-ratio: 2 / 3; }
+
+@keyframes shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+@media (max-width: 991.98px) { .sk-row { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 575.98px) { .sk-row { grid-template-columns: repeat(2, 1fr); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-title, .sk-card { animation: none; }
+}
+
+/* ═══════════════ RAIL / FOOTER POLISH ═══════════════ */
+@media (max-width: 767.98px) {
+  .home-main { padding-top: .5rem; }
+  .rail-section { margin-bottom: 1.6rem; }
+}
+
+@media (max-width: 575.98px) {
+  /* Footer: stack into two readable columns instead of four cramped ones. */
+  footer .row > [class*="col-"] { margin-bottom: .5rem; }
+  footer .fs-4 { font-size: 1.15rem !important; }
+  footer .small { font-size: .8rem; }
+  footer .d-flex.gap-2 .btn { font-size: .75rem; padding: .3rem .6rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HOME RAILS
+   One horizontally-scrolling row per rail from /api/v1/home. Native scroll
+   with snap points rather than a JS carousel: it works with a touch flick, a
+   trackpad, a scrollbar drag and the arrow buttons, and it doesn't care how
+   many items a rail has.
+   ═════════════════════════════════════════════════════════════════════════*/
+
+.home-main {
+  padding-top: 1.25rem;
+  padding-bottom: 3rem;
+}
+
+.rail-section {
+  margin-bottom: 2.25rem;
+}
+
+.rail-head {
+  display: flex;
+  align-items: baseline;
+  gap: .75rem;
+  margin: 0 0 .65rem;
+}
+
+.rail-title {
+  font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  letter-spacing: .2px;
+}
+
+/* Netflix's "Explore All" — appears on row hover, purely decorative for now. */
+.rail-explore {
+  font-size: .8rem;
+  font-weight: 600;
+  color: #54b9c5;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.rail-section:hover .rail-explore { opacity: 1; transform: translateX(0); }
+
+.rail-viewport {
+  position: relative;
+}
+
+.rail-track {
+  display: flex;
+  gap: .6rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  /* Room for the hover lift — the track clips vertically once it scrolls. */
+  padding: 6px 0 10px;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.rail-arrow {
+  position: absolute;
+  top: 0;
+  bottom: 10px;
+  z-index: 3;
+  width: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: rgba(10, 10, 10, .6);
+  color: #fff;
+  font-size: 1.4rem;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity .2s ease, background .2s ease;
+
+  &.prev { left: 0;  border-radius: 0 4px 4px 0; }
+  &.next { right: 0; border-radius: 4px 0 0 4px; }
+
+  &:hover  { background: rgba(10, 10, 10, .85); }
+  &:focus-visible { opacity: 1; outline: 2px solid #fff; }
+}
+
+.rail-viewport:hover .rail-arrow { opacity: 1; }
+
+/* ── Card ───────────────────────────────────────────────────────────────── */
+.rail-card {
+  flex: 0 0 auto;
+  width: clamp(118px, 30vw, 168px);
+  scroll-snap-align: start;
+  transition: transform .22s ease;
+
+  &.playable { cursor: pointer; }
+}
+
+.poster {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #191919;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .45);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.card-badge {
+  position: absolute;
+  top: .4rem;
+  left: .4rem;
+  padding: .1rem .4rem;
+  border-radius: 3px;
+  background: #e50914;
+  color: #fff;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .5px;
+}
+
+.poster-actions {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  gap: .45rem;
+  padding: .55rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, .85), rgba(0, 0, 0, 0));
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.circle-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, .65);
+  background: rgba(20, 20, 20, .75);
+  color: #fff;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease;
+
+  &.primary { background: #fff; color: #111; border-color: #fff; }
+  &:hover   { transform: scale(1.08); border-color: #fff; }
+}
+
+.poster-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, .25);
+
+  .bar {
+    display: block;
+    height: 100%;
+    background: #e50914;
+  }
+}
+
+.card-body-min {
+  padding: .4rem .1rem 0;
+}
+
+.card-name {
+  font-size: .82rem;
+  font-weight: 600;
+  color: #f2f2f2;
+  margin: 0;
+  /* Two lines max, then ellipsis — keeps every row the same height. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-meta {
+  font-size: .7rem;
+  color: rgba(255, 255, 255, .5);
+  margin: .15rem 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Hover treatment is pointer-only: on touch the actions stay visible instead. */
+@media (hover: hover) {
+  .rail-card:hover {
+    transform: translateY(-4px) scale(1.04);
+    z-index: 2;
+  }
+  .rail-card:hover .poster-actions,
+  .rail-card:focus-within .poster-actions {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (hover: none) {
+  .poster-actions { opacity: 1; transform: none; }
+}
+
+/* ── Top 10 ─────────────────────────────────────────────────────────────── */
+/* Oversized outlined rank sitting beside the poster, Netflix-style. */
+.rail-top-ten .rail-card {
+  display: flex;
+  align-items: flex-end;
+  width: clamp(190px, 50vw, 268px);
+}
+
+.rail-top-ten .rank {
+  flex: 0 0 auto;
+  width: 42%;
+  text-align: right;
+  padding-right: .15em;
+  font-size: clamp(72px, 15vw, 128px);
+  font-weight: 800;
+  line-height: .78;
+  color: #0d0d0d;
+  -webkit-text-stroke: 3px rgba(255, 255, 255, .45);
+  user-select: none;
+}
+
+.rail-top-ten .poster       { flex: 1 1 auto; }
+.rail-top-ten .card-body-min { display: none; }
+
+/* ── Empty state ────────────────────────────────────────────────────────── */
+.home-empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: rgba(255, 255, 255, .6);
+
+  i { font-size: 2.5rem; display: block; margin-bottom: .75rem; }
+  h2 { font-size: 1.25rem; color: #fff; margin: 0 0 .35rem; }
+  p { margin: 0; font-size: .9rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TITLE DETAILS MODAL
+   Plain Angular state, not a Bootstrap modal — this repo loads Bootstrap's JS
+   globally and a second instance would double-fire its data-API handlers.
+   ═════════════════════════════════════════════════════════════════════════*/
+
+.info-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1080;
+  background: rgba(0, 0, 0, .75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+  animation: infoFade .18s ease;
+}
+
+.info-modal {
+  position: relative;
+  width: min(640px, 100%);
+  background: #141414;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, .8);
+  animation: infoRise .22s ease;
+}
+
+.info-close {
+  position: absolute;
+  top: .6rem;
+  right: .6rem;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(20, 20, 20, .85);
+  color: #fff;
+  cursor: pointer;
+
+  &:hover { background: #000; }
+}
+
+.info-art {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+
+  img { width: 100%; height: 100%; object-fit: cover; display: block; }
+}
+
+.info-art-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #141414 2%, rgba(20, 20, 20, .1) 55%);
+}
+
+.info-art-copy {
+  position: absolute;
+  left: 1.25rem;
+  right: 1.25rem;
+  bottom: 1rem;
+
+  h2 {
+    font-size: clamp(1.25rem, 3vw, 1.8rem);
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .8);
+  }
+
+  .unavailable {
+    align-self: center;
+    font-size: .85rem;
+    color: rgba(255, 255, 255, .6);
+  }
+}
+
+.info-body {
+  padding: 1rem 1.25rem 1.5rem;
+}
+
+.info-meta {
+  font-size: .82rem;
+  color: #7ddc8b;
+  font-weight: 600;
+  margin: 0 0 .5rem;
+}
+
+.info-desc {
+  font-size: .92rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, .85);
+  margin: 0 0 .75rem;
+}
+
+.info-genres {
+  font-size: .82rem;
+  color: rgba(255, 255, 255, .55);
+  margin: 0;
+
+  .label { color: rgba(255, 255, 255, .35); }
+}
+
+@keyframes infoFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes infoRise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-card, .poster-actions, .rail-arrow { transition: none; }
+  .info-overlay, .info-modal { animation: none; }
+}
+
+/* ── Hero copy ──────────────────────────────────────────────────────────── */
+.hero-meta {
+  font-size: .85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, .75);
+  margin-bottom: .5rem;
+}
+
+.hero-desc {
+  /* Long synopses were pushing the buttons off the billboard. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Live TV nav button ──────────────────────────────────────────── */
+.btn-live {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .7rem;
+  border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, .04);
+  color: #fff;
+  font-size: .85rem;
+  font-weight: 700;
+  letter-spacing: .3px;
+  transition: background .15s ease, border-color .15s ease;
+
+  &:hover { background: rgba(229, 9, 20, .18); border-color: #e50914; color: #fff; }
+}
+
+/* The on-air dot, used by the nav button and the More sheet's Live TV row. */
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e50914;
+  display: inline-block;
+  box-shadow: 0 0 0 0 rgba(229, 9, 20, .7);
+  animation: navLivePulse 1.8s infinite;
+}
+
+@keyframes navLivePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(229, 9, 20, .65); }
+  70%  { box-shadow: 0 0 0 6px rgba(229, 9, 20, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(229, 9, 20, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
 }

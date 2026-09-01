@@ -1,0 +1,110 @@
+<div class="studio-page">
+  <header class="studio-head">
+    <button type="button" class="btn-back" (click)="back()" aria-label="Back to MyFlixer">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <div>
+      <h1>Studio</h1>
+      <p class="sub">Create a channel and broadcast live with OBS.</p>
+    </div>
+    <button *ngIf="isAdmin" type="button" class="btn-ghost ms-auto" (click)="goRequests()">
+      <i class="bi bi-shield-check me-2"></i>Requests
+    </button>
+  </header>
+
+  <div *ngIf="loading" class="studio-empty">Loading your channels…</div>
+
+  <ng-container *ngIf="!loading">
+    <!-- Existing channels -->
+    <div class="channel-grid" *ngIf="channels.length">
+      <button type="button" class="channel-card" *ngFor="let c of channels; trackBy: trackById" (click)="open(c)">
+        <div class="channel-logo">
+          <img *ngIf="c.logoUrl" [src]="c.logoUrl" [alt]="c.name">
+          <span *ngIf="!c.logoUrl">{{ c.name.charAt(0).toUpperCase() }}</span>
+        </div>
+        <div class="channel-meta">
+          <h3>{{ c.name }}</h3>
+          <p class="handle">&#64;{{ c.handle }}</p>
+          <span class="pill" [class]="'pill-' + c.streamingStatus">{{ statusLabel(c.streamingStatus) }}</span>
+        </div>
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- First-run state -->
+    <div class="studio-empty" *ngIf="!channels.length && !showForm">
+      <i class="bi bi-broadcast"></i>
+      <h2>You don't have a channel yet</h2>
+      <p>Anyone can create one. You'll need an admin to approve it before you can go live.</p>
+      <button type="button" class="btn-primary" (click)="openForm()">Create a channel</button>
+    </div>
+
+    <button type="button" class="btn-primary mt-3" *ngIf="channels.length && !showForm" (click)="openForm()">
+      Create another channel
+    </button>
+
+    <!-- Create form -->
+    <form class="studio-card create-form" *ngIf="showForm" (ngSubmit)="create()">
+      <h2>New channel</h2>
+
+      <label>
+        <span>Channel name</span>
+        <input type="text" name="name" [(ngModel)]="form.name" (input)="onNameInput()"
+               maxlength="60" required placeholder="My Gaming Channel">
+      </label>
+
+      <label>
+        <span>Handle</span>
+        <div class="handle-input">
+          <span class="prefix">&#64;</span>
+          <input type="text" name="handle" [(ngModel)]="form.handle" (input)="onHandleInput()"
+                 minlength="3" maxlength="30" required placeholder="my-gaming-channel">
+        </div>
+        <small>Lowercase letters, numbers and hyphens. This is permanent — it becomes your stream address.</small>
+      </label>
+
+      <label>
+        <span>Category</span>
+        <select name="category" [(ngModel)]="form.category">
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Description</span>
+        <textarea name="description" [(ngModel)]="form.description" rows="3" maxlength="300"
+                  placeholder="What do you stream?"></textarea>
+      </label>
+
+      <div class="logo-field">
+        <span class="logo-label">Channel logo</span>
+        <div class="logo-row">
+          <div class="logo-preview" [class.empty]="!form.logoUrl">
+            <img *ngIf="form.logoUrl" [src]="form.logoUrl" alt="Channel logo preview">
+            <span *ngIf="!form.logoUrl">{{ (form.name || '?').charAt(0).toUpperCase() }}</span>
+          </div>
+          <div class="logo-actions">
+            <input #logoInput type="file" accept="image/*" hidden (change)="pickLogo($event)">
+            <button type="button" class="btn-ghost" (click)="logoInput.click()" [disabled]="uploadingLogo">
+              {{ uploadingLogo ? 'Uploading…' : (form.logoUrl ? 'Change logo' : 'Upload logo') }}
+            </button>
+            <button type="button" class="btn-ghost" *ngIf="form.logoUrl && !uploadingLogo" (click)="clearLogo()">
+              Remove
+            </button>
+            <small>Square works best. Optional — channels without one show their initials.</small>
+          </div>
+        </div>
+        <p class="form-error" *ngIf="logoError">{{ logoError }}</p>
+      </div>
+
+      <p class="form-error" *ngIf="formError">{{ formError }}</p>
+
+      <div class="form-actions">
+        <button type="button" class="btn-ghost" (click)="cancelForm()" [disabled]="saving">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="saving || !form.name || form.handle.length < 3">
+          {{ saving ? 'Creating…' : 'Create channel' }}
+        </button>
+      </div>
+    </form>
+  </ng-container>
+</div>

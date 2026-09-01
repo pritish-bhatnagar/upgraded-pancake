@@ -1,0 +1,112 @@
+<div class="manage-page">
+  <a routerLink="/myflixer/who" class="manage-brand">
+    <span class="logo-dot"></span>
+    <span>Stream<span class="text-primary">Hub</span></span>
+  </a>
+
+  <!-- ── LIST VIEW ─────────────────────────────────────────────── -->
+  <ng-container *ngIf="!editing">
+    <h1 class="manage-title">Manage Profiles</h1>
+
+    <div class="manage-loading" *ngIf="loading">Loading…</div>
+    <div class="manage-error" *ngIf="error && !loading">{{ error }}</div>
+
+    <div class="manage-grid" *ngIf="!loading">
+      <div class="manage-item" *ngFor="let p of profiles">
+        <button type="button" class="manage-avatar-btn" (click)="startEdit(p)">
+          <span class="manage-avatar"
+                [style.background-image]="isUrl(p.avatar) ? 'url(' + p.avatar + ')' : null"
+                [style.background-color]="colorFor(p)">
+            <span class="manage-initial" *ngIf="!isUrl(p.avatar)">{{ initial(p.name) }}</span>
+            <span class="manage-edit-overlay"><i class="bi bi-pencil"></i></span>
+          </span>
+        </button>
+        <div class="manage-name-row">
+          <span class="manage-name">{{ p.name }}</span>
+          <button type="button" class="manage-delete" (click)="remove(p)" aria-label="Delete">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="manage-item" *ngIf="canAdd">
+        <button type="button" class="manage-avatar-btn" (click)="startAdd()">
+          <span class="manage-avatar manage-avatar-add"><span class="manage-plus">+</span></span>
+        </button>
+        <span class="manage-name">Add Profile</span>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-outline-light manage-done" (click)="done()" *ngIf="!loading">Done</button>
+  </ng-container>
+
+  <!-- ── EDITOR VIEW ───────────────────────────────────────────── -->
+  <ng-container *ngIf="editing">
+    <h1 class="manage-title">{{ editing.id ? 'Edit Profile' : 'Add Profile' }}</h1>
+
+    <div class="editor-card">
+      <div class="editor-error" *ngIf="error">{{ error }}</div>
+
+      <!-- Tap the circle itself for photo options (no separate upload button) -->
+      <input #avatarInput type="file" accept="image/*" hidden (change)="onAvatarSelected($event)" />
+
+      <div class="avatar-picker">
+        <button type="button" class="editor-avatar-preview"
+                [style.background-color]="!isUrl(editing.avatar) ? colorForKey(editing.avatar) : null"
+                [style.background-image]="isUrl(editing.avatar) ? 'url(' + editing.avatar + ')' : null"
+                (click)="toggleAvatarMenu()"
+                [disabled]="uploading"
+                aria-haspopup="menu"
+                [attr.aria-expanded]="avatarMenuOpen"
+                aria-label="Profile photo options">
+          <span *ngIf="!isUrl(editing.avatar)">{{ initial(editing.name) }}</span>
+          <span class="avatar-camera"><i class="bi" [ngClass]="uploading ? 'bi-hourglass-split' : 'bi-camera-fill'"></i></span>
+        </button>
+
+        <div class="avatar-menu" *ngIf="avatarMenuOpen">
+          <button type="button" class="avatar-menu-item" *ngIf="hasPhoto" (click)="viewPhoto()">
+            <i class="bi bi-eye me-2"></i>View photo
+          </button>
+          <button type="button" class="avatar-menu-item" (click)="avatarInput.click()">
+            <i class="bi bi-image me-2"></i>{{ hasPhoto ? 'Change photo' : 'Choose photo' }}
+          </button>
+          <button type="button" class="avatar-menu-item danger" *ngIf="hasPhoto" (click)="removePhoto()">
+            <i class="bi bi-trash me-2"></i>Remove photo
+          </button>
+        </div>
+      </div>
+
+      <label class="editor-label">…or pick a color</label>
+      <div class="editor-swatches">
+        <button type="button" class="swatch" *ngFor="let a of presets"
+                [style.background-color]="a.color"
+                [class.selected]="editing.avatar === a.key"
+                (click)="pickAvatar(a.key)"
+                [attr.aria-label]="a.key"></button>
+      </div>
+
+      <label class="editor-label">Name</label>
+      <input type="text" class="form-control editor-input" [(ngModel)]="editing.name" maxlength="40" placeholder="Profile name" />
+
+      <label class="editor-check">
+        <input type="checkbox" [(ngModel)]="editing.isKids" />
+        <span>Kids profile</span>
+      </label>
+
+      <div class="editor-actions">
+        <button type="button" class="btn btn-outline-light" (click)="cancelEdit()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="save()" [disabled]="saving">
+          {{ saving ? 'Saving…' : 'Save' }}
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Full-size photo viewer -->
+  <div class="photo-viewer" *ngIf="viewingPhoto" (click)="closeViewer()">
+    <img [src]="viewingPhoto" alt="Profile photo" (click)="$event.stopPropagation()" />
+    <button type="button" class="photo-viewer-close" (click)="closeViewer()" aria-label="Close">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+</div>

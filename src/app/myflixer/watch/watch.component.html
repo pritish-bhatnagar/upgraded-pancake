@@ -1,0 +1,30 @@
+<div class="watch">
+  <!-- Loading: black screen with a spinner, so it reads as "the film is starting" -->
+  <div class="watch-state" *ngIf="loading">
+    <div class="spinner" aria-hidden="true"></div>
+    <p>Loading…</p>
+  </div>
+
+  <!-- Error: nothing to play, offer a way out -->
+  <div class="watch-state" *ngIf="!loading && !playback">
+    <h1>{{ errorTitle }}</h1>
+    <p>{{ errorMessage }}</p>
+    <div class="watch-actions">
+      <button type="button" class="btn-primary-flat" (click)="retry()">Try again</button>
+      <button type="button" class="btn-ghost" (click)="exit()">Back to browse</button>
+    </div>
+  </div>
+
+  <app-video-player
+    *ngIf="playback"
+    [src]="playback.streamUrl"
+    [kind]="playback.kind"
+    [poster]="playback.posterUrl"
+    [title]="playback.title"
+    [subtitle]="playback.releaseYear + ' · ' + playback.maturityRating"
+    [startAt]="playback.resumeSeconds"
+    [autoplay]="true"
+    (progress)="onProgress($event)"
+    (ended)="onEnded()"
+    (back)="exit()"></app-video-player>
+</div>

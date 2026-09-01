@@ -1,0 +1,118 @@
+<div class="auth-page">
+  <a routerLink="/myflixer" class="auth-brand">
+    <span class="logo-dot"></span>
+    <span>Stream<span class="text-primary">Hub</span></span>
+  </a>
+
+  <div class="auth-card auth-card-wide">
+    <h1 class="auth-title">Create your account</h1>
+
+    <!-- Step indicator -->
+    <div class="stepper">
+      <div class="step" *ngFor="let s of steps; let i = index"
+           [class.active]="i === step" [class.done]="i < step">
+        <span class="step-dot">{{ i < step ? '✓' : (i + 1) }}</span>
+        <span class="step-label">{{ s }}</span>
+      </div>
+    </div>
+
+    <div class="auth-error" *ngIf="error">{{ error }}</div>
+
+    <!-- STEP 1: Account -->
+    <form [formGroup]="accountForm" *ngIf="step === 0" (ngSubmit)="next()">
+      <div class="auth-field">
+        <input type="text" formControlName="name" placeholder="Full name" autocomplete="name" class="form-control" />
+        <div class="auth-hint" *ngIf="accountForm.get('name')?.touched && accountForm.get('name')?.hasError('required')">Name is required.</div>
+      </div>
+      <div class="auth-field">
+        <input type="email" formControlName="email" placeholder="Email" autocomplete="email" class="form-control" />
+        <div class="auth-hint" *ngIf="accountForm.get('email')?.touched && accountForm.get('email')?.hasError('required')">Email is required.</div>
+        <div class="auth-hint" *ngIf="accountForm.get('email')?.touched && accountForm.get('email')?.hasError('email')">Enter a valid email.</div>
+      </div>
+      <div class="auth-field">
+        <input type="password" formControlName="password" placeholder="Password" autocomplete="new-password" class="form-control" />
+        <div class="auth-hint" *ngIf="accountForm.get('password')?.touched && accountForm.get('password')?.hasError('minlength')">Use at least 6 characters.</div>
+      </div>
+      <div class="auth-field">
+        <input type="password" formControlName="confirmPassword" placeholder="Confirm password" autocomplete="new-password" class="form-control" />
+        <div class="auth-hint" *ngIf="accountForm.get('confirmPassword')?.touched && accountForm.hasError('mismatch')">Passwords do not match.</div>
+      </div>
+
+      <div class="step-actions">
+        <span></span>
+        <button type="submit" class="btn btn-danger">Next</button>
+      </div>
+    </form>
+
+    <!-- STEP 2: About you -->
+    <form [formGroup]="detailsForm" *ngIf="step === 1" (ngSubmit)="next()">
+      <div class="auth-field">
+        <label class="field-label">Gender</label>
+        <select formControlName="gender" class="form-select">
+          <option value="">Prefer not to say</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="auth-field">
+        <label class="field-label">Date of birth</label>
+        <input type="date" formControlName="dob" class="form-control" />
+      </div>
+      <div class="auth-field">
+        <label class="field-label">Country</label>
+        <select formControlName="country" class="form-select">
+          <option value="">Select…</option>
+          <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+      <div class="auth-field">
+        <label class="field-label">Phone (optional)</label>
+        <input type="tel" formControlName="phone" placeholder="Phone number" class="form-control" />
+      </div>
+
+      <div class="step-actions">
+        <button type="button" class="btn btn-outline-light" (click)="prev()">Back</button>
+        <button type="submit" class="btn btn-danger">Next</button>
+      </div>
+    </form>
+
+    <!-- STEP 3: Preferences -->
+    <form [formGroup]="prefsForm" *ngIf="step === 2" (ngSubmit)="submit()">
+      <div class="auth-field">
+        <label class="field-label">Preferred language</label>
+        <select formControlName="language" class="form-select">
+          <option *ngFor="let l of languages" [value]="l.code">{{ l.label }}</option>
+        </select>
+      </div>
+
+      <label class="field-label">What are you into?</label>
+      <div class="chips">
+        <button type="button" class="chip" *ngFor="let interest of interestsList"
+                [class.selected]="selectedInterests.includes(interest)"
+                (click)="toggleInterest(interest)">
+          {{ interest }}
+        </button>
+      </div>
+
+      <div class="step-actions">
+        <button type="button" class="btn btn-outline-light" (click)="prev()">Back</button>
+        <button type="submit" class="btn btn-danger" [disabled]="loading">
+          {{ loading ? 'Creating account…' : 'Create account' }}
+        </button>
+      </div>
+    </form>
+
+    <!-- Google shortcut only on the first step -->
+    <ng-container *ngIf="step === 0">
+      <div class="auth-divider"><span>OR</span></div>
+      <button type="button" class="btn btn-outline-light w-100 auth-google" (click)="signupWithGoogle()" [disabled]="loading">
+        <i class="bi bi-google me-2"></i> Sign up with Google
+      </button>
+    </ng-container>
+
+    <div class="auth-switch">
+      Already have an account? <a routerLink="/myflixer/login" [queryParams]="authQueryParams">Sign in</a>.
+    </div>
+  </div>
+</div>

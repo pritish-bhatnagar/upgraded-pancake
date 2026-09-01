@@ -1,0 +1,461 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   MyFlixer custom video player
+   Dark, chrome-free surface. All controls fade together with .vp-visible.
+   ───────────────────────────────────────────────────────────────────────────*/
+
+:host {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+  outline: none;
+  user-select: none;
+  font-family: inherit;
+
+  /* Fullscreen: fill the screen instead of keeping the 16:9 box */
+  &:fullscreen {
+    aspect-ratio: auto;
+    width: 100vw;
+    height: 100vh;
+  }
+}
+
+:host(.vp-hide-cursor) { cursor: none; }
+
+.vp-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  background: #000;
+}
+
+/* ── Scrim ──────────────────────────────────────────────────────────────── */
+.vp-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.65) 0%, rgba(0,0,0,0) 22%),
+    linear-gradient(to top,    rgba(0,0,0,.80) 0%, rgba(0,0,0,0) 34%);
+  &.vp-visible { opacity: 1; }
+}
+
+/* ── Top bar ────────────────────────────────────────────────────────────── */
+.vp-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.25rem;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity .25s ease, transform .25s ease;
+  pointer-events: none;
+
+  &.vp-visible { opacity: 1; transform: none; pointer-events: auto; }
+}
+
+.vp-titles { min-width: 0; }
+
+.vp-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 3px rgba(0,0,0,.6);
+}
+
+.vp-subtitle {
+  font-size: .8rem;
+  color: rgba(255,255,255,.72);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vp-live-badge {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  padding: .25rem .55rem;
+  border-radius: 4px;
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.18);
+}
+
+.vp-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e50914;
+  box-shadow: 0 0 0 0 rgba(229,9,20,.7);
+  animation: vp-pulse 1.8s infinite;
+}
+
+@keyframes vp-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(229,9,20,.6); }
+  70%  { box-shadow: 0 0 0 7px rgba(229,9,20,0); }
+  100% { box-shadow: 0 0 0 0 rgba(229,9,20,0); }
+}
+
+/* ── Center play ────────────────────────────────────────────────────────── */
+.vp-center-play {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  font-size: 2.4rem;
+  line-height: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: transform .18s ease, background .18s ease;
+
+  &:hover { transform: translate(-50%, -50%) scale(1.07); background: rgba(0,0,0,.72); }
+  i { margin-left: 4px; }   /* optical centering of the play triangle */
+}
+
+/* ── Spinner ────────────────────────────────────────────────────────────── */
+.vp-spinner {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.vp-spinner-ring {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.2);
+  border-top-color: #e50914;
+  animation: vp-spin .9s linear infinite;
+}
+
+@keyframes vp-spin { to { transform: rotate(360deg); } }
+
+/* ── Error ──────────────────────────────────────────────────────────────── */
+.vp-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  background: rgba(0,0,0,.82);
+  text-align: center;
+  padding: 1.5rem;
+
+  i { font-size: 2rem; color: #e50914; }
+  p { margin: 0; color: rgba(255,255,255,.85); max-width: 32ch; }
+}
+
+.vp-retry {
+  margin-top: .5rem;
+  padding: .45rem 1.1rem;
+  border-radius: 4px;
+  border: none;
+  background: #fff;
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover { background: #e6e6e6; }
+}
+
+/* ── Bottom bar ─────────────────────────────────────────────────────────── */
+.vp-bottom {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 0 1rem .6rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .25s ease, transform .25s ease;
+  pointer-events: none;
+
+  &.vp-visible { opacity: 1; transform: none; pointer-events: auto; }
+}
+
+/* ── Timeline ───────────────────────────────────────────────────────────── */
+.vp-timeline {
+  position: relative;
+  height: 20px;                 /* generous hit area around a thin track */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none;           /* required for pointer-capture dragging */
+}
+
+.vp-track {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,.28);
+  transition: height .12s ease;
+}
+
+.vp-timeline:hover .vp-track,
+.vp-timeline.vp-scrubbing .vp-track { height: 6px; }
+
+.vp-buffered,
+.vp-played {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  border-radius: 2px;
+}
+
+.vp-buffered { background: rgba(255,255,255,.45); }
+.vp-played   { background: #e50914; }
+
+.vp-knob {
+  position: absolute;
+  top: 50%;
+  width: 13px;
+  height: 13px;
+  margin-left: -6.5px;
+  border-radius: 50%;
+  background: #e50914;
+  transform: translateY(-50%) scale(0);
+  transition: transform .12s ease;
+}
+
+.vp-timeline:hover .vp-knob,
+.vp-timeline.vp-scrubbing .vp-knob { transform: translateY(-50%) scale(1); }
+
+.vp-hover-time {
+  position: absolute;
+  bottom: 22px;
+  transform: translateX(-50%);
+  padding: .15rem .4rem;
+  border-radius: 3px;
+  background: rgba(0,0,0,.85);
+  font-size: .72rem;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ── Control row ────────────────────────────────────────────────────────── */
+.vp-controls {
+  display: flex;
+  align-items: center;
+  gap: .15rem;
+  padding-top: .1rem;
+}
+
+.vp-spacer { flex: 1; }
+
+.vp-icon-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: .4rem .5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: .92;
+  transition: opacity .15s ease, transform .15s ease, background .15s ease;
+
+  &:hover  { opacity: 1; background: rgba(255,255,255,.12); transform: scale(1.06); }
+  &:active { transform: scale(.96); }
+  &:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+}
+
+/* ±10s buttons: number tucked inside the circular arrow */
+.vp-skip {
+  span {
+    position: absolute;
+    top: 52%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: .52rem;
+    font-weight: 700;
+    pointer-events: none;
+  }
+}
+
+/* ── Volume ─────────────────────────────────────────────────────────────── */
+.vp-volume {
+  display: flex;
+  align-items: center;
+
+  &:hover .vp-volume-slider,
+  .vp-volume-slider:focus-visible { width: 72px; opacity: 1; margin-right: .5rem; }
+}
+
+.vp-volume-slider {
+  width: 0;
+  opacity: 0;
+  height: 4px;
+  appearance: none;
+  background: rgba(255,255,255,.35);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: width .18s ease, opacity .18s ease, margin .18s ease;
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+  }
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: none;
+    border-radius: 50%;
+    background: #fff;
+  }
+}
+
+/* ── Time / live ────────────────────────────────────────────────────────── */
+.vp-time {
+  margin-left: .5rem;
+  font-size: .82rem;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255,255,255,.85);
+  white-space: nowrap;
+}
+
+.vp-time-sep,
+.vp-time-total { color: rgba(255,255,255,.55); }
+.vp-time-sep   { margin: 0 .25rem; }
+
+.vp-golive {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  margin-left: .6rem;
+  padding: .25rem .6rem;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: #fff;
+  background: rgba(229,9,20,.9);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover { background: #e50914; }
+}
+
+/* ── Menus (speed / quality) ────────────────────────────────────────────── */
+.vp-menu-wrap { position: relative; }
+
+.vp-menu {
+  position: absolute;
+  bottom: calc(100% + .5rem);
+  right: 0;
+  min-width: 160px;
+  padding: .35rem;
+  border-radius: 6px;
+  background: rgba(20,20,20,.97);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 8px 26px rgba(0,0,0,.6);
+  z-index: 5;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.vp-menu-head {
+  padding: .35rem .6rem .5rem;
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+}
+
+.vp-menu-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  width: 100%;
+  padding: .45rem .6rem;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: rgba(255,255,255,.85);
+  font-size: .85rem;
+  text-align: left;
+  cursor: pointer;
+
+  i { opacity: 0; font-size: .9rem; }
+
+  &:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+  &.vp-active {
+    color: #fff;
+    font-weight: 600;
+    i { opacity: 1; color: #e50914; }
+  }
+}
+
+/* ── Touch devices ──────────────────────────────────────────────────────────
+   Anything revealed by :hover is unreachable here, so the affordances that a
+   mouse earns on hover have to be permanent instead.                        */
+@media (hover: none) {
+  /* The knob is the only cue for where playback sits — never hide it. */
+  .vp-knob   { transform: translateY(-50%) scale(1); }
+  .vp-track  { height: 5px; }
+  /* A finger is far less precise than a cursor: grow the drag target. */
+  .vp-timeline { height: 28px; }
+  /* Hover-only chrome that can never be triggered by touch. */
+  .vp-hover-time { display: none; }
+  .vp-icon-btn:hover { background: transparent; transform: none; }
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 575.98px) {
+  .vp-bottom  { padding: 0 .5rem .35rem; }
+  /* Comfortable tap targets — 1.15rem glyphs in .35rem padding were ~28px,
+     well under the ~44px a thumb needs. */
+  .vp-icon-btn { font-size: 1.2rem; padding: .5rem .45rem; }
+  .vp-time    { font-size: .72rem; margin-left: .25rem; }
+  .vp-volume-slider { display: none; }   /* phones use hardware volume */
+  .vp-title   { font-size: .92rem; }
+  .vp-subtitle { font-size: .72rem; }
+  .vp-center-play { width: 62px; height: 62px; font-size: 2rem; }
+  .vp-top     { padding: .7rem .75rem; }
+
+  /* Nine controls will not fit across a phone. Drop the ones that are either
+     redundant (speed, PiP) or duplicated by a gesture (double-tap seeks ±10s)
+     rather than letting the row overflow off-screen. */
+  .vp-controls  { gap: 0; }
+  .vp-skip      { display: none; }
+  .vp-rate-wrap { display: none; }
+  .vp-pip-btn   { display: none; }
+
+  /* Menus open upward from a bottom bar and must stay on screen. */
+  .vp-menu {
+    max-height: 44vh;
+    overflow-y: auto;
+    right: 0;
+    left: auto;
+  }
+}
+
+/* Very narrow phones: shed the timestamp too. */
+@media (max-width: 359.98px) {
+  .vp-time { display: none; }
+}

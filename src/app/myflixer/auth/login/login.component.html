@@ -1,0 +1,57 @@
+<div class="auth-page">
+  <a routerLink="/myflixer" class="auth-brand">
+    <span class="logo-dot"></span>
+    <span>Stream<span class="text-primary">Hub</span></span>
+  </a>
+
+  <div class="auth-card">
+    <h1 class="auth-title">Sign In</h1>
+
+    <div class="auth-error" *ngIf="error">{{ error }}</div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <div class="auth-field">
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="Email"
+          autocomplete="email"
+          class="form-control"
+        />
+        <div class="auth-hint" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')">
+          Email is required.
+        </div>
+        <div class="auth-hint" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.hasError('email')">
+          Enter a valid email.
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <input
+          type="password"
+          formControlName="password"
+          placeholder="Password"
+          autocomplete="current-password"
+          class="form-control"
+        />
+        <div class="auth-hint" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')">
+          Password is required.
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-danger w-100 auth-submit" [disabled]="loginForm.invalid || loading">
+        {{ loading ? 'Signing In…' : 'Sign In' }}
+      </button>
+
+      <div class="auth-divider"><span>OR</span></div>
+
+      <button type="button" class="btn btn-outline-light w-100 auth-google" (click)="loginWithGoogle()" [disabled]="loading">
+        <i class="bi bi-google me-2"></i> Sign in with Google
+      </button>
+    </form>
+
+    <div class="auth-switch">
+      New to StreamHub? <a routerLink="/myflixer/signup" [queryParams]="authQueryParams">Sign up now</a>.
+    </div>
+  </div>
+</div>

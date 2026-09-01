@@ -1,0 +1,29 @@
+<div class="who-page">
+  <h1 class="who-title">Who's watching?</h1>
+
+  <div class="who-loading" *ngIf="loading">Loading profiles…</div>
+  <div class="who-error" *ngIf="error">{{ error }}</div>
+
+  <div class="who-grid" *ngIf="!loading">
+    <button type="button" class="who-item" *ngFor="let p of profiles" (click)="select(p)">
+      <span class="who-avatar"
+            [style.background-image]="isUrl(p) ? 'url(' + p.avatar + ')' : null"
+            [style.background-color]="colorFor(p)">
+        <span class="who-initial" *ngIf="!isUrl(p)">{{ initial(p) }}</span>
+        <span class="who-kids-badge" *ngIf="p.isKids">KIDS</span>
+      </span>
+      <span class="who-name">{{ p.name }}</span>
+    </button>
+
+    <button type="button" class="who-item who-add" *ngIf="profiles.length < 5" (click)="addProfile()">
+      <span class="who-avatar who-avatar-add">
+        <span class="who-plus">+</span>
+      </span>
+      <span class="who-name">Add Profile</span>
+    </button>
+  </div>
+
+  <button type="button" class="who-manage" *ngIf="!loading && profiles.length" (click)="manage()">
+    Manage Profiles
+  </button>
+</div>

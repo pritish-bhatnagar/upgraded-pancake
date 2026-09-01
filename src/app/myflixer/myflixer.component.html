@@ -4,13 +4,8 @@
        [class.nav-glass]="scrolled"
        [class.nav-transparent]="!scrolled">
     <div class="container-fluid">
-      <!-- Mobile toggler (left) -->
-      <button class="navbar-toggler me-2 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainOffcanvas" aria-controls="mainOffcanvas" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      
-      <!-- Center search form -->
-      <form class="d-flex me-auto flex-grow-1" role="search" style="max-width: 420px;">
+      <!-- Center search form (mobile uses the one inside the offcanvas instead) -->
+      <form class="d-none d-lg-flex me-auto flex-grow-1" role="search" style="max-width: 420px;">
         <input class="form-control bg-dark-subtle border-0 text-white" 
                type="search" 
                placeholder="Search shows, sports, news" 
@@ -27,17 +22,73 @@
       </a>
 
       <!-- Right actions -->
-      <div class="d-flex gap-2">
-        <a class="btn btn-outline-light fw-semibold" href="#">Log In</a>
-        <a class="btn btn-primary fw-semibold try-btn" href="#">Try StreamHub+</a>
-        <a class="btn btn-danger fw-semibold" href="#">Sign Up</a>
+      <div class="d-flex gap-2 align-items-center nav-actions">
+        <!-- Live TV: its own page, so the guide is linkable and back works.
+             Desktop only — on mobile it crowds the top bar, so it lives in the
+             bottom tab row instead. -->
+        <a class="btn btn-live d-none d-lg-inline-flex" routerLink="/myflixer/live" aria-label="Live channels">
+          <span class="live-dot"></span>
+          <span class="d-none d-sm-inline">Live</span>
+        </a>
+
+        <ng-container *ngIf="!isLoggedIn; else loggedInActions">
+          <a class="btn btn-outline-light fw-semibold" routerLink="/myflixer/login">Log In</a>
+          <a class="btn btn-primary fw-semibold try-btn" href="#">Try StreamHub+</a>
+          <a class="btn btn-danger fw-semibold d-none d-sm-inline-block" routerLink="/myflixer/signup">Sign Up</a>
+        </ng-container>
+        <ng-template #loggedInActions>
+          <a class="btn btn-primary fw-semibold try-btn" href="#">Try StreamHub+</a>
+
+          <!-- Netflix-style account dropdown -->
+          <div class="dropdown nav-account">
+            <button type="button" class="nav-avatar-btn" data-bs-toggle="dropdown" aria-expanded="false">
+              <img *ngIf="navAvatarUrl; else avatarFallback" [src]="navAvatarUrl" class="nav-avatar" alt="Profile" />
+              <ng-template #avatarFallback>
+                <span class="nav-avatar nav-avatar-fallback" [style.background-color]="navAvatarColor">{{ navAvatarInitial }}</span>
+              </ng-template>
+              <i class="bi bi-caret-down-fill nav-caret"></i>
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end nav-account-menu">
+              <!-- Current profile header -->
+              <li class="dropdown-header current-profile" *ngIf="activeProfile">
+                <span class="mini-avatar" [style.background-color]="profileColor(activeProfile)"
+                      [style.background-image]="profileIsUrl(activeProfile) ? 'url(' + activeProfile.avatar + ')' : null">
+                  <span *ngIf="!profileIsUrl(activeProfile)">{{ profileInitial(activeProfile) }}</span>
+                </span>
+                <span class="current-name">{{ activeProfile.name }}</span>
+              </li>
+
+              <!-- Switch to another profile -->
+              <ng-container *ngFor="let p of profiles">
+                <li *ngIf="!activeProfile || p.id !== activeProfile.id">
+                  <button type="button" class="dropdown-item" (click)="switchProfile(p)">
+                    <span class="mini-avatar" [style.background-color]="profileColor(p)"
+                          [style.background-image]="profileIsUrl(p) ? 'url(' + p.avatar + ')' : null">
+                      <span *ngIf="!profileIsUrl(p)">{{ profileInitial(p) }}</span>
+                    </span>
+                    <span>{{ p.name }}</span>
+                  </button>
+                </li>
+              </ng-container>
+
+              <li><hr class="dropdown-divider"></li>
+              <li><button type="button" class="dropdown-item" (click)="switchProfilePicker()"><i class="bi bi-arrow-left-right me-2"></i>Switch Profiles</button></li>
+              <li><button type="button" class="dropdown-item" (click)="manageProfiles()"><i class="bi bi-pencil-square me-2"></i>Manage Profiles</button></li>
+              <li><button type="button" class="dropdown-item" (click)="goStudio()"><i class="bi bi-broadcast me-2"></i>Studio</button></li>
+              <li><button type="button" class="dropdown-item" (click)="goAccount()"><i class="bi bi-person-gear me-2"></i>Account</button></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><button type="button" class="dropdown-item" (click)="logout()"><i class="bi bi-box-arrow-right me-2"></i>Sign out of StreamHub</button></li>
+            </ul>
+          </div>
+        </ng-template>
       </div>
 
     </div>
   </nav>
 
-  <!-- Row 2: category rail (scrollable on mobile) -->
-  <div class="nav-row-2 border-top border-secondary-subtle">
+  <!-- Row 2: category rail — desktop only; mobile uses the bottom "More" sheet -->
+  <div class="nav-row-2 border-top border-secondary-subtle d-none d-lg-block">
     <div class="container-fluid px-3 px-md-4">
       <ul class="nav nav-pills gap-1 flex-nowrap overflow-auto justify-content-center category-nav">
         <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
@@ -53,37 +104,78 @@
     </div>
   </div>
 
-  <!-- Offcanvas (improved mobile expanded menu) -->
-  <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="mainOffcanvas" aria-labelledby="mainOffcanvasLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="mainOffcanvasLabel">Browse</h5>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body d-flex flex-column gap-3">
-      <form class="d-flex" role="search">
-        <input class="form-control bg-dark-subtle border-0 text-white" type="search" placeholder="Search StreamHub" aria-label="Search">
-      </form>
-      <div class="list-group list-group-flush">
-        <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Home</a>
-        <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Series</a>
-        <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Films</a>
-        <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Live</a>
-        <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">News</a>
-        <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Sports</a>
-        <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Kids</a>
-        <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">Originals</a>
-        <a class="list-group-item list-group-item-action bg-transparent text-white" href="#">My List</a>
-      </div>
-      <a class="btn btn-primary fw-semibold mt-auto" href="#">Try StreamHub+</a>
-    </div>
-  </div>
 </header>
+
+<!-- ===================== MOBILE BOTTOM TABS ===================== -->
+<nav class="mobile-tabs d-lg-none" role="navigation" aria-label="Primary">
+  <button type="button" class="tab" [class.active]="!searchOpen && !moreOpen" (click)="goHome()">
+    <i class="bi bi-house-door-fill"></i><span>Home</span>
+  </button>
+  <button type="button" class="tab tab-live" (click)="goLive()">
+    <i class="bi bi-broadcast"></i><span>Live</span>
+  </button>
+  <button type="button" class="tab" [class.active]="searchOpen" (click)="openSearch()">
+    <i class="bi bi-search"></i><span>Search</span>
+  </button>
+  <button type="button" class="tab" [class.active]="moreOpen" (click)="openMore()">
+    <i class="bi bi-list"></i><span>More</span>
+  </button>
+</nav>
+
+<!-- ===================== MOBILE SEARCH OVERLAY ===================== -->
+<div class="mobile-overlay" [class.open]="searchOpen" (click)="closeSearch()">
+  <div class="search-panel" (click)="$event.stopPropagation()">
+    <div class="search-bar">
+      <i class="bi bi-search"></i>
+      <input #mobileSearch type="search" class="search-input" placeholder="Search shows, sports, news" aria-label="Search" />
+      <button type="button" class="search-cancel" (click)="closeSearch()">Cancel</button>
+    </div>
+    <p class="search-hint">Start typing to search StreamHub.</p>
+  </div>
+</div>
+
+<!-- ===================== MOBILE "MORE" SHEET ===================== -->
+<div class="mobile-overlay" [class.open]="moreOpen" (click)="closeMore()">
+  <div class="more-sheet" (click)="$event.stopPropagation()">
+    <div class="sheet-grabber"></div>
+
+    <div class="sheet-profile" *ngIf="isLoggedIn && activeProfile">
+      <span class="mini-avatar"
+            [style.background-color]="profileColor(activeProfile)"
+            [style.background-image]="profileIsUrl(activeProfile) ? 'url(' + activeProfile.avatar + ')' : null">
+        <span *ngIf="!profileIsUrl(activeProfile)">{{ profileInitial(activeProfile) }}</span>
+      </span>
+      <span class="sheet-profile-name">{{ activeProfile.name }}</span>
+    </div>
+
+    <div class="sheet-section">
+      <a class="sheet-link" routerLink="/myflixer/live" (click)="closeMore()">
+        <span class="live-dot me-2"></span>Live TV
+      </a>
+      <a class="sheet-link" *ngFor="let c of categories" href="#" (click)="closeMore()">{{ c }}</a>
+    </div>
+
+    <div class="sheet-section" *ngIf="isLoggedIn; else sheetLoggedOut">
+      <button type="button" class="sheet-link" (click)="switchProfilePicker(); closeMore()"><i class="bi bi-arrow-left-right me-2"></i>Switch Profiles</button>
+      <button type="button" class="sheet-link" (click)="goStudio(); closeMore()"><i class="bi bi-broadcast me-2"></i>Studio</button>
+      <button type="button" class="sheet-link" (click)="manageProfiles(); closeMore()"><i class="bi bi-pencil-square me-2"></i>Manage Profiles</button>
+      <button type="button" class="sheet-link" (click)="goAccount(); closeMore()"><i class="bi bi-person-gear me-2"></i>Account</button>
+      <button type="button" class="sheet-link danger" (click)="logout(); closeMore()"><i class="bi bi-box-arrow-right me-2"></i>Sign out</button>
+    </div>
+    <ng-template #sheetLoggedOut>
+      <div class="sheet-section">
+        <a class="sheet-link" routerLink="/myflixer/login" (click)="closeMore()">Log In</a>
+        <a class="sheet-link" routerLink="/myflixer/signup" (click)="closeMore()">Sign Up</a>
+      </div>
+    </ng-template>
+  </div>
+</div>
 
 <!-- ===================== HERO (with top gradient for navbar contrast) ===================== -->
 <section class="hero-wrapper position-relative">
   <div class="hero-gradient-top"></div>
 
-  <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000"
+  <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000"
        (mouseenter)="onCarouselHover(true)"
        (mouseleave)="onCarouselHover(false)">
 
@@ -131,10 +223,17 @@
         <div class="carousel-caption text-start">
           <div class="badge bg-danger mb-2" *ngIf="s.badgeLabel">{{ s.badgeLabel }}</div>
           <h1 class="display-5 fw-bold">{{ s.title }}</h1>
-          <p class="lead text-white-75">{{ s.description }}</p>
+          <div class="hero-meta" *ngIf="metaLine(s)">{{ metaLine(s) }}</div>
+          <p class="lead text-white-75 hero-desc">{{ s.description }}</p>
           <div class="d-flex gap-2">
-            <a class="btn btn-primary btn-lg">Watch Now</a>
-            <a class="btn btn-outline-light btn-lg">More Info</a>
+            <button type="button" class="btn btn-primary btn-lg"
+                    *ngIf="isPlayable(s)"
+                    (click)="play(s, $event)">
+              <i class="bi bi-play-fill me-1"></i>Watch Now
+            </button>
+            <button type="button" class="btn btn-outline-light btn-lg" (click)="toggleInfo(s, $event)">
+              <i class="bi bi-info-circle me-1"></i>More Info
+            </button>
           </div>
         </div>
       </div>
@@ -152,80 +251,131 @@
 </section>
 
 <!-- ===================== CONTENT ===================== -->
-<main class="container-fluid px-3 px-md-4 py-4">
+<main class="home-main px-3 px-md-4">
 
-  <!-- Rail: Continue Watching (landscape) -->
-  <div class="rail d-flex align-items-center mb-2">
-    <h2 class="section-title flex-grow-1">Continue Watching</h2>
-    <div class="btn-group d-none d-md-inline-flex" role="group" aria-label="controls">
-      <button class="btn btn-outline-light btn-sm" data-bs-target="#cwCarousel" data-bs-slide="prev">‹</button>
-      <button class="btn btn-outline-light btn-sm" data-bs-target="#cwCarousel" data-bs-slide="next">›</button>
+  <!-- Shimmer placeholders until the first payload lands -->
+  <div class="skeleton" *ngIf="loading" aria-hidden="true">
+    <div class="sk-title"></div>
+    <div class="sk-row">
+      <div class="sk-card" *ngFor="let s of skeletonCards"></div>
+    </div>
+    <div class="sk-title"></div>
+    <div class="sk-row">
+      <div class="sk-card" *ngFor="let s of skeletonCards"></div>
     </div>
   </div>
-  <div id="cwCarousel" class="carousel slide" data-bs-interval="0">
-    <div class="carousel-inner">
-      <div *ngFor="let chunked of chunk(continueWatching, 6); let i = index" class="carousel-item" [class.active]="i===0">
-        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-3 row-cols-lg-6 g-3">
-          <div class="col" *ngFor="let item of chunked">
-            <div class="card h-100 bg-dark text-white border-0 shadow-sm show-card">
-              <img [src]="item.posterUrl" class="card-img-top" [alt]="item.title">
-              <div class="progress progress-thin">
-                <div class="progress-bar" role="progressbar" style="width: 45%"></div>
-              </div>
-              <div class="card-img-overlay d-flex flex-column justify-content-end gradient-overlay p-2">
-                <div class="small text-white-50">{{ item.subtitle }}</div>
-                <h6 class="mb-0 fw-semibold">{{ item.title }}</h6>
-              </div>
+
+  <!-- ── Rails ──────────────────────────────────────────────────────────────
+       One block for every rail the API sends, in the order it sends them.
+       Adding a rail on the backend needs no change here; only a brand-new
+       railType would. -->
+  <section class="rail-section"
+           *ngFor="let rail of rails; trackBy: trackByRail"
+           [class.rail-top-ten]="rail.railType === 'top_ten'">
+
+    <div class="rail-head">
+      <h2 class="rail-title">{{ rail.title }}</h2>
+      <span class="rail-explore d-none d-lg-inline">Explore all <i class="bi bi-chevron-right"></i></span>
+    </div>
+
+    <div class="rail-viewport">
+      <button type="button" class="rail-arrow prev d-none d-md-flex"
+              aria-label="Scroll left" (click)="scrollRail(track, -1)">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <div class="rail-track" #track>
+        <article class="rail-card"
+                 *ngFor="let item of rail.items; let i = index; trackBy: trackByItem"
+                 [class.playable]="isPlayable(item)"
+                 (click)="play(item, $event)">
+
+          <span class="rank" *ngIf="rail.railType === 'top_ten'" aria-hidden="true">{{ i + 1 }}</span>
+
+          <div class="poster">
+            <img [src]="item.posterUrl" [alt]="item.title" class="fade-img"
+                 loading="lazy" (load)="onImageLoad($event)">
+
+            <span class="card-badge" *ngIf="item.badgeLabel">{{ item.badgeLabel }}</span>
+
+            <!-- Hover layer: play + info, desktop only (see .rail-card:hover) -->
+            <div class="poster-actions">
+              <button type="button" class="circle-btn primary"
+                      *ngIf="isPlayable(item)"
+                      [attr.aria-label]="'Play ' + item.title"
+                      (click)="play(item, $event)">
+                <i class="bi bi-play-fill"></i>
+              </button>
+              <button type="button" class="circle-btn"
+                      [attr.aria-label]="'More about ' + item.title"
+                      (click)="toggleInfo(item, $event)">
+                <i class="bi bi-info-lg"></i>
+              </button>
+            </div>
+
+            <div class="poster-progress" *ngIf="rail.railType === 'continue_watching'">
+              <span class="bar" [style.width]="progressWidth(item)"></span>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Rail: Trending Now (landscape) -->
-  <div class="rail d-flex align-items-center mt-4 mb-2">
-    <h2 class="section-title flex-grow-1">Trending Now</h2>
-    <div class="btn-group d-none d-md-inline-flex" role="group" aria-label="controls">
-      <button class="btn btn-outline-light btn-sm" data-bs-target="#trendingCarousel" data-bs-slide="prev">‹</button>
-      <button class="btn btn-outline-light btn-sm" data-bs-target="#trendingCarousel" data-bs-slide="next">›</button>
-    </div>
-  </div>
-  <div id="trendingCarousel" class="carousel slide" data-bs-interval="0">
-    <div class="carousel-inner">
-      <div *ngFor="let chunked of chunk(trendingNow, 6); let i = index" class="carousel-item" [class.active]="i===0">
-        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-3 row-cols-lg-6 g-3">
-          <div class="col" *ngFor="let item of chunked">
-            <div class="card h-100 bg-dark text-white border-0 shadow-sm show-card">
-              <img [src]="item.posterUrl" class="card-img-top" [alt]="item.title">
-              <div class="card-img-overlay d-flex flex-column justify-content-end gradient-overlay p-2">
-                <div class="badge bg-primary align-self-start" *ngIf="item.tag">{{ item.tag }}</div>
-                <h6 class="mb-0 fw-semibold">{{ item.title }}</h6>
-              </div>
-            </div>
+          <div class="card-body-min">
+            <h3 class="card-name">{{ item.title }}</h3>
+            <p class="card-meta">{{ metaLine(item) }}</p>
           </div>
-        </div>
+        </article>
       </div>
-    </div>
-  </div>
 
-  <!-- News (cards) -->
-  <h2 class="section-title mt-4">Featured News</h2>
-  <div class="row row-cols-1 row-cols-md-3 g-3">
-    <div class="col" *ngFor="let item of featuredNews">
-      <div class="card h-100 bg-dark text-white border-0 shadow-sm">
-        <img [src]="item.posterUrl" class="card-img-top" [alt]="item.title">
-        <div class="card-body">
-          <h5 class="card-title">{{ item.title }}</h5>
-          <p class="card-text text-white-50">{{ item.subtitle }}</p>
-          <a class="btn btn-outline-light btn-sm">Read</a>
-        </div>
-      </div>
+      <button type="button" class="rail-arrow next d-none d-md-flex"
+              aria-label="Scroll right" (click)="scrollRail(track, 1)">
+        <i class="bi bi-chevron-right"></i>
+      </button>
     </div>
+  </section>
+
+  <!-- Nothing to show at all (API returned no rails) -->
+  <div class="home-empty" *ngIf="!loading && !rails.length">
+    <i class="bi bi-collection-play"></i>
+    <h2>Nothing to watch yet</h2>
+    <p>The catalog is empty for your region. Check back soon.</p>
   </div>
 </main>
 
-<!-- ===================== FOOTER ===================== -->
+<!-- ===================== TITLE DETAILS ===================== -->
+<div class="info-overlay" *ngIf="infoItem" (click)="closeInfo()">
+  <div class="info-modal" (click)="$event.stopPropagation()">
+    <button type="button" class="info-close" aria-label="Close" (click)="closeInfo()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <div class="info-art">
+      <img [src]="infoItem.heroImageUrl || infoItem.posterUrl" [alt]="infoItem.title">
+      <div class="info-art-fade"></div>
+      <div class="info-art-copy">
+        <h2>{{ infoItem.title }}</h2>
+        <div class="d-flex gap-2 mt-2">
+          <button type="button" class="btn btn-primary"
+                  *ngIf="isPlayable(infoItem)"
+                  (click)="play(infoItem, $event)">
+            <i class="bi bi-play-fill me-1"></i>Play
+          </button>
+          <span class="unavailable" *ngIf="!isPlayable(infoItem)">Not available to stream yet</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-body">
+      <p class="info-meta">{{ metaLine(infoItem) }}</p>
+      <p class="info-desc">{{ infoItem.description }}</p>
+      <p class="info-genres" *ngIf="infoItem.genres?.length">
+        <span class="label">Genres:</span> {{ infoItem.genres.join(', ') }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== FOOTER (hidden for now) =====================
+     Commented out on request: it was pushing up into the viewport on the way
+     into Live / a title, and none of its links go anywhere yet.
 <footer class="bg-black text-white-50 mt-auto">
   <div class="container-fluid px-3 px-md-4 py-5">
     <div class="row g-4">
@@ -269,4 +419,5 @@
       </div>
     </div>
   </div>
-</footer>`
+</footer>
+-->

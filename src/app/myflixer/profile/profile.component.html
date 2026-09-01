@@ -1,0 +1,109 @@
+<div class="profile-page">
+  <a routerLink="/myflixer" class="profile-brand">
+    <span class="logo-dot"></span>
+    <span>Stream<span class="text-primary">Hub</span></span>
+  </a>
+
+  <div class="profile-card" *ngIf="!loading; else loadingState">
+    <div class="profile-header">
+      <div class="avatar-preview"><span>{{ initials }}</span></div>
+      <div>
+        <h1 class="profile-title">Account</h1>
+        <p class="profile-email">{{ profile?.email }}</p>
+      </div>
+    </div>
+
+    <div class="profile-error" *ngIf="error">{{ error }}</div>
+    <div class="profile-success" *ngIf="saved">Saved.</div>
+
+    <form [formGroup]="profileForm" (ngSubmit)="save()">
+      <!-- Read-only account identity -->
+      <div class="profile-field">
+        <label>Email <span class="locked">(can't be changed)</span></label>
+        <input type="text" class="form-control readonly" [value]="profile?.email" disabled />
+      </div>
+
+      <div class="grid-2">
+        <div class="profile-field">
+          <label>Display name</label>
+          <input type="text" formControlName="displayName" placeholder="Shown on top nav" class="form-control" maxlength="60" />
+        </div>
+        <div class="profile-field">
+          <label>Full name</label>
+          <input type="text" formControlName="fullName" placeholder="Your full name" class="form-control" maxlength="100" />
+        </div>
+      </div>
+
+      <p class="profile-note">
+        Pictures belong to your viewing profiles, not the account.
+        <a routerLink="/myflixer/manage-profiles">Manage profiles</a> to change them.
+      </p>
+
+      <div class="grid-2">
+        <div class="profile-field">
+          <label>Gender</label>
+          <select formControlName="gender" class="form-select">
+            <option value="">Prefer not to say</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="profile-field">
+          <label>Date of birth</label>
+          <input type="date" formControlName="dob" class="form-control" />
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="profile-field">
+          <label>Country</label>
+          <select formControlName="country" class="form-select">
+            <option value="">Select…</option>
+            <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+        <div class="profile-field">
+          <label>Phone</label>
+          <input type="tel" formControlName="phone" placeholder="Phone number" class="form-control" />
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="profile-field">
+          <label>Preferred language</label>
+          <select formControlName="language" class="form-select">
+            <option value="">Select…</option>
+            <option *ngFor="let l of languages" [value]="l.code">{{ l.label }}</option>
+          </select>
+        </div>
+        <div class="profile-field">
+          <label>Region</label>
+          <input type="text" formControlName="region" placeholder="e.g. IN" class="form-control" maxlength="2" />
+        </div>
+      </div>
+
+      <div class="profile-field">
+        <label>Interests</label>
+        <div class="chips">
+          <button type="button" class="chip" *ngFor="let interest of interestsList"
+                  [class.selected]="selectedInterests.includes(interest)"
+                  (click)="toggleInterest(interest)">
+            {{ interest }}
+          </button>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button type="button" class="btn btn-outline-light" (click)="back()">Back</button>
+        <button type="submit" class="btn btn-danger" [disabled]="profileForm.invalid || saving">
+          {{ saving ? 'Saving…' : 'Save changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <ng-template #loadingState>
+    <div class="profile-loading">Loading profile…</div>
+  </ng-template>
+</div>

@@ -1,0 +1,168 @@
+<!-- Media surface -->
+<video #video
+       class="vp-video"
+       [poster]="poster || null"
+       playsinline
+       preload="metadata"
+       (pointerup)="onSurfaceTap($event)"></video>
+
+<!-- Click-through scrim: darkens edges so the chrome stays readable over bright frames -->
+<div class="vp-scrim" [class.vp-visible]="controlsVisible || !playing"></div>
+
+<!-- Buffering -->
+<div class="vp-spinner" *ngIf="waiting && !errorMessage && !streamOver">
+  <div class="vp-spinner-ring"></div>
+</div>
+
+<!-- Center play affordance (only when paused and idle) -->
+<button type="button"
+        class="vp-center-play"
+        *ngIf="!playing && !waiting && !errorMessage && !streamOver"
+        (click)="togglePlay()"
+        aria-label="Play">
+  <i class="bi bi-play-fill"></i>
+</button>
+
+<!-- The broadcast finished: a dead end, not a retryable error -->
+<div class="vp-error vp-over" *ngIf="streamOver">
+  <i class="bi bi-broadcast-pin"></i>
+  <p>This live stream has ended.</p>
+</div>
+
+<!-- Error state -->
+<div class="vp-error" *ngIf="errorMessage && !streamOver">
+  <i class="bi bi-exclamation-triangle"></i>
+  <p>{{ errorMessage }}</p>
+  <button type="button" class="vp-retry" (click)="retry()">Try again</button>
+</div>
+
+<!-- Top bar -->
+<div class="vp-top" [class.vp-visible]="controlsVisible || !playing">
+  <button type="button" class="vp-icon-btn vp-back" *ngIf="showBack" (click)="emitBack()" aria-label="Back">
+    <i class="bi bi-arrow-left"></i>
+  </button>
+  <div class="vp-titles" *ngIf="title">
+    <div class="vp-title">{{ title }}</div>
+    <div class="vp-subtitle" *ngIf="subtitle">{{ subtitle }}</div>
+  </div>
+  <span class="vp-live-badge" *ngIf="live"><span class="vp-dot"></span>LIVE</span>
+</div>
+
+<!-- Bottom control bar -->
+<div class="vp-bottom" [class.vp-visible]="controlsVisible || !playing">
+
+  <!-- Timeline. Meaningless on a linear channel: there is no duration to scrub
+       against, so live gets the LIVE badge and GO LIVE instead. -->
+  <div class="vp-timeline"
+       *ngIf="!live"
+       #scrub
+       [class.vp-scrubbing]="scrubbing"
+       (pointerdown)="onScrubDown($event)"
+       (pointermove)="onScrubMove($event)"
+       (pointerup)="onScrubUp($event)"
+       (pointerleave)="onScrubLeave()">
+    <div class="vp-track">
+      <div class="vp-buffered" [style.width.%]="bufferedPercent"></div>
+      <div class="vp-played"   [style.width.%]="playedPercent"></div>
+      <div class="vp-knob"     [style.left.%]="playedPercent"></div>
+    </div>
+    <div class="vp-hover-time" *ngIf="hoverPercent !== null" [style.left.%]="hoverPercent">
+      {{ formatTime(hoverTime) }}
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="vp-controls">
+    <button type="button" class="vp-icon-btn" (click)="togglePlay()" [attr.aria-label]="playing ? 'Pause' : 'Play'">
+      <i class="bi" [class.bi-pause-fill]="playing" [class.bi-play-fill]="!playing"></i>
+    </button>
+
+    <!-- Nothing to skip forward into on a live edge, and skipping back would
+         only drop you out of the broadcast. -->
+    <ng-container *ngIf="!live">
+      <button type="button" class="vp-icon-btn vp-skip" (click)="skip(-10)" aria-label="Back 10 seconds">
+        <i class="bi bi-arrow-counterclockwise"></i><span>10</span>
+      </button>
+      <button type="button" class="vp-icon-btn vp-skip" (click)="skip(10)" aria-label="Forward 10 seconds">
+        <i class="bi bi-arrow-clockwise"></i><span>10</span>
+      </button>
+    </ng-container>
+
+    <div class="vp-volume">
+      <button type="button" class="vp-icon-btn" (click)="toggleMute()" [attr.aria-label]="muted ? 'Unmute' : 'Mute'">
+        <i class="bi"
+           [class.bi-volume-mute-fill]="muted || volume === 0"
+           [class.bi-volume-down-fill]="!muted && volume > 0 && volume < 0.5"
+           [class.bi-volume-up-fill]="!muted && volume >= 0.5"></i>
+      </button>
+      <input class="vp-volume-slider"
+             type="range" min="0" max="1" step="0.01"
+             [value]="muted ? 0 : volume"
+             (input)="onVolumeInput($event)"
+             aria-label="Volume">
+    </div>
+
+    <div class="vp-time" *ngIf="!live">
+      <span class="vp-time-current">{{ formatTime(currentTime) }}</span>
+      <span class="vp-time-sep">/</span>
+      <span class="vp-time-total">{{ formatTime(duration) }}</span>
+    </div>
+
+    <button type="button" class="vp-golive" *ngIf="live && behindLive" (click)="goLive()">
+      <span class="vp-dot"></span>GO LIVE
+    </button>
+
+    <span class="vp-spacer"></span>
+
+    <button type="button" class="vp-icon-btn" *ngIf="canShare"
+            (click)="share.emit()" aria-label="Share">
+      <i class="bi bi-share-fill"></i>
+    </button>
+
+    <!-- Playback speed -->
+    <div class="vp-menu-wrap vp-rate-wrap" *ngIf="!live">
+      <button type="button" class="vp-icon-btn" (click)="toggleMenu('rate')" aria-label="Playback speed">
+        <i class="bi bi-speedometer2"></i>
+      </button>
+      <div class="vp-menu" *ngIf="openMenu === 'rate'">
+        <div class="vp-menu-head">Speed</div>
+        <button type="button"
+                *ngFor="let r of rates"
+                class="vp-menu-item"
+                [class.vp-active]="rate === r"
+                (click)="setRate(r)">
+          <i class="bi bi-check2"></i>{{ r === 1 ? 'Normal' : r + 'x' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Quality (HLS only) -->
+    <div class="vp-menu-wrap" *ngIf="levels.length > 1">
+      <button type="button" class="vp-icon-btn vp-quality-btn" (click)="toggleMenu('quality')" aria-label="Quality">
+        <i class="bi bi-gear"></i>
+      </button>
+      <div class="vp-menu" *ngIf="openMenu === 'quality'">
+        <div class="vp-menu-head">Quality</div>
+        <button type="button" class="vp-menu-item" [class.vp-active]="currentLevel === -1" (click)="setLevel(-1)">
+          <i class="bi bi-check2"></i>{{ qualityLabel === 'Auto' ? 'Auto' : qualityLabel }}
+        </button>
+        <button type="button"
+                *ngFor="let l of levels"
+                class="vp-menu-item"
+                [class.vp-active]="currentLevel === l.index"
+                (click)="setLevel(l.index)">
+          <i class="bi bi-check2"></i>{{ l.label }}
+        </button>
+      </div>
+    </div>
+
+    <button type="button" class="vp-icon-btn vp-pip-btn" *ngIf="pipSupported" (click)="togglePip()" aria-label="Picture in picture">
+      <i class="bi" [class.bi-pip]="!pipActive" [class.bi-pip-fill]="pipActive"></i>
+    </button>
+
+    <button type="button" class="vp-icon-btn" (click)="toggleFullscreen()"
+            [attr.aria-label]="isFullscreen ? 'Exit fullscreen' : 'Fullscreen'">
+      <i class="bi" [class.bi-fullscreen]="!isFullscreen" [class.bi-fullscreen-exit]="isFullscreen"></i>
+    </button>
+  </div>
+</div>

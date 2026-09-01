@@ -13,6 +13,12 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": false,
     "declaration": false,
+    // hls.js 1.6 ships types written for TypeScript 5.7+ (Uint8Array<ArrayBuffer>),
+    // and this project is on 5.4. Skipping declaration checking in dependencies
+    // is the Angular CLI default for new workspaces and does not weaken checking
+    // of our own source — bumping TypeScript instead would drag the Angular
+    // toolchain with it for no benefit here.
+    "skipLibCheck": true,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
