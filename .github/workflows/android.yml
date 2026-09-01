@@ -82,6 +82,24 @@ jobs:
           fi
           test -f dist/upgraded-pancake/index.html
 
+      # The APK is the TV app, not the whole site: it should open on
+      # /myflixer rather than the Aasta home page. Tauri loads index.html from
+      # the asset protocol, so the route cannot be in the URL it is given —
+      # there is no such file to serve. Instead the path is rewritten in place
+      # before Angular boots, and the router picks it up on init as if the
+      # phone had navigated there. Doing it here rather than in app-routing
+      # keeps the website's own '' route exactly as it is.
+      - name: Open on the myflixer route
+        run: |
+          python3 - <<'PY'
+          p = 'dist/upgraded-pancake/index.html'
+          html = open(p).read()
+          tag = "<script>history.replaceState(null,'','/myflixer')</script>"
+          assert '</head>' in html, 'no </head> in the built index.html'
+          open(p, 'w').write(html.replace('</head>', tag + '\n</head>', 1))
+          PY
+          grep -c myflixer dist/upgraded-pancake/index.html
+
       - name: Install the Tauri CLI
         working-directory: android
         run: npm install
