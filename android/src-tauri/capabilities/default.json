@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/mobile-schema.json",
+  "identifier": "default",
+  "description": "The app is a webview over the bundled Angular build; it asks nothing of the host.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

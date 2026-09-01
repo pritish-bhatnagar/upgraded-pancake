@@ -1,0 +1,32 @@
+[package]
+name = "upgraded-pancake-mobile"
+version = "0.0.1"
+description = "Mystic Falls for Android"
+edition = "2021"
+rust-version = "1.77"
+
+# Tauri's Android template builds the app as a library with a mobile entry
+# point; main.rs exists only so the same code can be run on a desktop.
+[lib]
+name = "upgraded_pancake_mobile"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# Unlike Superboard, this app has no work of its own to do: the Angular bundle
+# talks to Firebase and to the API host directly, so the Rust side is only the
+# shell that starts the webview.
+tauri = { version = "2", features = [] }
+
+# Debug builds carry DWARF for every dependency, which is megabytes of nothing
+# useful inside an APK nobody attaches a debugger to.
+[profile.dev]
+debug = false
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true

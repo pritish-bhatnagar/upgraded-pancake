@@ -1,0 +1,159 @@
+# Builds the Android APK.
+#
+# None of this fits on the 1GB VM: the Angular production build alone swaps for
+# ~9 minutes there, and the Android SDK, the NDK and Gradle want several
+# gigabytes more. A GitHub runner has all of it, which is the point of building
+# here rather than on the box.
+#
+# The result is debug-signed — enough to sideload from the artifact zip. Play
+# Store distribution would need a real signing key kept in repository secrets.
+
+name: android
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "src/**"
+      - "android/**"
+      - "angular.json"
+      - "package-lock.json"
+      - ".github/workflows/android.yml"
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # A runner has ~14GB free, and an Android build with Rust in it does not
+      # fit alongside toolchains nobody here uses.
+      - name: Free some disk
+        run: |
+          df -h / | tail -1
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk/ndk/2[0-5].* \
+                      /opt/ghc /usr/local/share/boost /usr/share/swift || true
+          df -h / | tail -1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # Tauri's Android tooling is Gradle underneath, which wants a JDK.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Android NDK
+        run: |
+          sdkmanager --install "ndk;26.3.11579264" >/dev/null
+          echo "NDK_HOME=$ANDROID_HOME/ndk/26.3.11579264" >> "$GITHUB_ENV"
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          # arm64 only. Every phone made in the last decade is arm64, and each
+          # extra architecture is another full build of every dependency.
+          targets: aarch64-linux-android
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: android/src-tauri
+
+      # The APK ships the same bundle pm2 serves on :4201. Built here with the
+      # runner's memory, so none of build.sh's staging dance is needed.
+      - name: Install the app's dependencies
+        run: npm ci
+
+      - name: Build the Angular app
+        run: |
+          npx ng build --configuration production --output-path dist/upgraded-pancake
+          # Depending on the builder version Angular nests the output under
+          # browser/; Tauri wants index.html at the top of frontendDist.
+          if [ -f dist/upgraded-pancake/browser/index.html ]; then
+            mv dist/upgraded-pancake/browser dist/.b
+            rm -rf dist/upgraded-pancake
+            mv dist/.b dist/upgraded-pancake
+          fi
+          test -f dist/upgraded-pancake/index.html
+
+      - name: Install the Tauri CLI
+        working-directory: android
+        run: npm install
+
+      - name: Generate icons
+        working-directory: android
+        run: npx tauri icon ./icon-source.png
+
+      # Creates the Gradle project under src-tauri/gen/android. It is generated
+      # rather than committed: it is build output, and it changes with the CLI.
+      - name: Initialise the Android project
+        working-directory: android
+        run: npx tauri android init --skip-targets-install
+
+      # The app calls its API over plain HTTP on port 3000. Android has blocked
+      # cleartext by default since Pie, and the generated manifest does not
+      # opt in, so without this every API call fails while Firebase (HTTPS)
+      # quietly keeps working — which is a confusing way to find out.
+      - name: Allow cleartext to the API host
+        run: |
+          M=android/src-tauri/gen/android/app/src/main/AndroidManifest.xml
+          sed -i 's|<application |<application android:usesCleartextTraffic="true" |' "$M"
+          grep -n usesCleartextTraffic "$M"
+
+      # Compile the Rust for the Android target on its own first. When something
+      # is wrong it fails in a minute with a legible message, instead of eight
+      # minutes later underneath Gradle with the output silenced.
+      - name: Build the Rust for Android
+        working-directory: android/src-tauri
+        env:
+          NDK_HOME: ${{ env.NDK_HOME }}
+        run: |
+          TOOLCHAIN="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin"
+          export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$TOOLCHAIN/aarch64-linux-android24-clang"
+          export CC_aarch64_linux_android="$TOOLCHAIN/aarch64-linux-android24-clang"
+          export AR_aarch64_linux_android="$TOOLCHAIN/llvm-ar"
+          set -o pipefail
+          cargo build --lib --target aarch64-linux-android 2>&1 | tee /tmp/cargo-check.log
+
+      - name: Rust errors, if any
+        if: failure()
+        run: |
+          echo "::group::Rust compile errors"
+          grep -E "^error" -A 12 /tmp/cargo-check.log | head -200 || tail -60 /tmp/cargo-check.log
+          echo "::endgroup::"
+
+      - name: Build the APK
+        working-directory: android
+        env:
+          NDK_HOME: ${{ env.NDK_HOME }}
+        run: |
+          set -o pipefail
+          npx tauri android build --apk --debug --target aarch64 --verbose 2>&1 | tee /tmp/android-build.log
+
+      # A failed Gradle run buries the cause hundreds of lines up. Print just
+      # the interesting lines, last.
+      - name: What actually went wrong
+        if: failure()
+        run: |
+          echo "::group::Errors"
+          grep -nE "^error|error\[E[0-9]+\]|FAILURE:|What went wrong|Caused by:|error: could not" \
+            /tmp/android-build.log | tail -60 || echo "(no error lines matched; showing the tail)"
+          echo "::endgroup::"
+          echo "::group::Last 60 lines"
+          tail -60 /tmp/android-build.log
+          echo "::endgroup::"
+
+      - name: Find what was built
+        run: find android/src-tauri/gen/android -name '*.apk' -print
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mystic-falls-android
+          path: android/src-tauri/gen/android/**/*.apk
+          if-no-files-found: error
